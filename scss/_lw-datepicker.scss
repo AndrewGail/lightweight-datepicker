@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+body {
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: #111;
+}
+
+.lw-datepicker {
+  position: absolute;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  width: 400px;
+  height: 300px;
+  content: '';
+}
+
+.lw-datepicker-toolbar {
+
+}
+
+.lw-datepicker-previous, .lw-datepicker-next {
+  padding: 4px 8px;
+  float: left;
+
+  outline: 1px solid gray;
+}
+
+.lw-datepicker-next {
+  float: right;  
+}
