@@ -1,28 +1,31 @@
 @import "compass/css3";
+@import "compass/utilities";
 
 // General
-$lw-datepicker-basecolor: #ddd !default;
+$lw-datepicker-basecolor: #444 !default;
 
 // Container
 $lw-datepicker-background: $lw-datepicker-basecolor !default;
 $lw-datepicker-border-width: 1px !default;
 $lw-datepicker-border-style: solid !default;
-$lw-datepicker-border-color: #ccc !default;
+$lw-datepicker-border-color: contrast-color($lw-datepicker-basecolor, darken($lw-datepicker-basecolor, 10%),lighten($lw-datepicker-basecolor, 25%), 50%) !default;
 $lw-datepicker-padding: 5px !default;
 
 // Cells
-$lw-datepicker-cell-background: #fff !default;
-$lw-datepicker-cell-background-hover: darken($lw-datepicker-cell-background, 15%) !default;
-$lw-datepicker-cell-width: 13px !default;
-$lw-datepicker-cell-height: 13px !default;
+$lw-datepicker-cell-background: contrast-color($lw-datepicker-basecolor, darken($lw-datepicker-basecolor, 10%),lighten($lw-datepicker-basecolor, 25%), 50%) !default;
+$lw-datepicker-cell-background-hover: contrast-color(#fff - $lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 5%),lighten($lw-datepicker-cell-background, 5%), 50%) !default;
+$lw-datepicker-cell-width: 22px !default;
+$lw-datepicker-cell-height: $lw-datepicker-cell-width !default;
 $lw-datepicker-cell-border-width: $lw-datepicker-border-width !default;
 $lw-datepicker-cell-border-style: $lw-datepicker-border-style !default;
 $lw-datepicker-cell-border-color: $lw-datepicker-basecolor !default;
-$lw-datepicker-cell-padding: 4px !default;
 
 // Fonts
 $lw-datepicker-cell-font-size: 12px !default;
-$lw-datepicker-font-color: red;
+$lw-datepicker-font-color-base: scale-saturation($lw-datepicker-cell-background, -75%) !default;
+$lw-datepicker-font-color-base: contrast-color($lw-datepicker-font-color-base, darken($lw-datepicker-font-color-base, 40%), lighten($lw-datepicker-font-color-base, 50%), 50%);
+$lw-datepicker-font-color-active: red !default;
+$lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 15%), lighten($lw-datepicker-cell-background, 15%), 50%), -50%) !default;
 
 .lw-datepicker {
   display: block;
@@ -34,8 +37,7 @@ $lw-datepicker-font-color: red;
   left: 40px;
   top: 24px;
 
-  width: ($lw-datepicker-cell-width + $lw-datepicker-cell-border-width +
-    $lw-datepicker-cell-padding * 2) * 7 + 1;
+  width: $lw-datepicker-cell-width * 7 + $lw-datepicker-cell-border-width * 8;
 
   background: $lw-datepicker-background;
   border-width: $lw-datepicker-border-width;
@@ -48,9 +50,10 @@ $lw-datepicker-font-color: red;
 }
 
 .lw-datepicker-toolbar {
-  font-size: $lw-datepicker-cell-font-size + 1px;
   text-align: center;
   overflow: hidden;
+  font-size: $lw-datepicker-cell-font-size + 1px;
+  color: $lw-datepicker-font-color-base;
   padding: 2px 0 4px;
 }
 
@@ -60,9 +63,9 @@ $lw-datepicker-font-color: red;
 }
 
 .lw-datepicker-previous, .lw-datepicker-next {
-  padding: 0 8px;
-  font-weight: bold;
   float: left;
+  font-weight: bold;
+  padding: 0 8px;
 }
 
 .lw-datepicker-next {
@@ -73,24 +76,25 @@ $lw-datepicker-font-color: red;
   display: block;
   float: left;
   text-align: center;
+  color: $lw-datepicker-font-color-base;
 }
 
 .lw-datepicker-dows li {
   font-size: $lw-datepicker-cell-font-size - 3px;
-  width: $lw-datepicker-cell-width + $lw-datepicker-cell-padding * 2 ;
+  width: $lw-datepicker-cell-width ;
   height: $lw-datepicker-cell-height;
-  padding: 3px 0 0;
   background: $lw-datepicker-cell-background;
   border-left-width: $lw-datepicker-cell-border-width;
   border-style: $lw-datepicker-cell-border-style;
   border-color: $lw-datepicker-basecolor;
+  padding: 3px 0 0;
 }
 
 .lw-datepicker-days li {
   font-size: $lw-datepicker-cell-font-size;
   width: $lw-datepicker-cell-width;
   height: $lw-datepicker-cell-height;
-  padding: $lw-datepicker-cell-padding;
+  line-height: $lw-datepicker-cell-height;
   background: $lw-datepicker-cell-background;
   border-left-width: $lw-datepicker-cell-border-width;
   border-top-width: $lw-datepicker-cell-border-width;
@@ -110,10 +114,10 @@ $lw-datepicker-font-color: red;
   background: $lw-datepicker-cell-background-hover;
 }
 
-.lw-datepicker-active-day {
-  color: $lw-datepicker-font-color;
+li.lw-datepicker-active-day {
+  color: $lw-datepicker-font-color-active;
 }
 
-.lw-datepicker-neighbour-month-day {
-  color: $lw-datepicker-font-color;
+li.lw-datepicker-neighbour-month-day {
+  color: $lw-datepicker-font-color-neighbour;
 }
