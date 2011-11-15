@@ -1,31 +1,43 @@
 @import "compass/css3";
 @import "compass/utilities";
 
+@function floor($value) {
+  @return $value - $value % 1;
+}
+
+@function ceil($value) {
+  @return $value - $value % 1 + 1;
+}
+
 // General
-$lw-datepicker-basecolor: #fff !default;
+$lw-datepicker-base-color: #000 !default;
+$lw-datepicker-base-font-size: 20px !default;
+$lw-datepicker-cell-width: floor($lw-datepicker-base-font-size * 1.8) !default;
 
 // Container
-$lw-datepicker-background: $lw-datepicker-basecolor !default;
-$lw-datepicker-border-width: 1px !default;
+$lw-datepicker-background: $lw-datepicker-base-color !default;
+$lw-datepicker-border-width: ceil($lw-datepicker-base-font-size * 0.05) !default;
+
 $lw-datepicker-border-style: solid !default;
-$lw-datepicker-border-color: contrast-color($lw-datepicker-basecolor, darken($lw-datepicker-basecolor, 10%),lighten($lw-datepicker-basecolor, 25%), 50%) !default;
-$lw-datepicker-padding: 5px !default;
+$lw-datepicker-border-color: contrast-color($lw-datepicker-base-color, darken($lw-datepicker-base-color, 10%), lighten($lw-datepicker-base-color, 25%), 50%) !default;
+$lw-datepicker-padding: floor($lw-datepicker-base-font-size * 0.4) !default;
 
 // Cells
-$lw-datepicker-cell-background: contrast-color($lw-datepicker-basecolor, darken($lw-datepicker-basecolor, 10%),lighten($lw-datepicker-basecolor, 15%), 50%) !default;
+$lw-datepicker-cell-background: contrast-color($lw-datepicker-base-color, darken($lw-datepicker-base-color, 10%), lighten($lw-datepicker-base-color, 15%), 50%) !default;
 $lw-datepicker-cell-background: scale-saturation($lw-datepicker-cell-background, -40%);
-$lw-datepicker-cell-background-hover: contrast-color(#fff - $lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 15%),lighten($lw-datepicker-cell-background, 5%), 50%) !default;
-$lw-datepicker-cell-width: 22px !default;
+$lw-datepicker-cell-background-hover: contrast-color(#fff - $lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 20%), lighten($lw-datepicker-cell-background, 8%), 50%) !default;
 $lw-datepicker-cell-height: $lw-datepicker-cell-width !default;
 $lw-datepicker-cell-border-width: $lw-datepicker-border-width !default;
 $lw-datepicker-cell-border-style: $lw-datepicker-border-style !default;
-$lw-datepicker-cell-border-color: $lw-datepicker-basecolor !default;
+$lw-datepicker-cell-border-color: $lw-datepicker-base-color !default;
 
 // Fonts
-$lw-datepicker-cell-font-size: 12px !default;
 $lw-datepicker-font-color-base: scale-saturation($lw-datepicker-cell-background, -75%) !default;
 $lw-datepicker-font-color-base: contrast-color($lw-datepicker-font-color-base, darken($lw-datepicker-font-color-base, 40%), lighten($lw-datepicker-font-color-base, 60%), 50%);
 $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 15%), lighten($lw-datepicker-cell-background, 15%), 50%), -50%) !default;
+
+$lw-datepicker-width: floor($lw-datepicker-cell-width * 7 + $lw-datepicker-cell-border-width * 8);
+$lw-datepicker-border-radius: floor($lw-datepicker-base-font-size * 0.4);
 
 .lw-datepicker {
   display: block;
@@ -37,22 +49,20 @@ $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepic
   left: 40px;
   top: 24px;
 
-  width: $lw-datepicker-cell-width * 7 + $lw-datepicker-cell-border-width * 8;
-
+  width: $lw-datepicker-width;
   background: $lw-datepicker-background;
   border-width: $lw-datepicker-border-width;
   border-style: $lw-datepicker-border-style;
-  border-color: $lw-datepicker-border-color;  
-
+  border-color: $lw-datepicker-border-color;
   padding: $lw-datepicker-padding;
 
-  @include border-radius(5px);
+  @include border-radius($lw-datepicker-border-radius);
 }
 
 .lw-datepicker-toolbar {
   text-align: center;
   overflow: hidden;
-  font-size: $lw-datepicker-cell-font-size + 1px;
+  font-size: floor($lw-datepicker-base-font-size * 1.1);
   color: $lw-datepicker-font-color-base;
   padding: 2px 0 2px;
 }
@@ -65,7 +75,7 @@ $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepic
 .lw-datepicker-previous, .lw-datepicker-next {
   float: left;
   font-weight: bold;
-  padding: 0 8px;
+  padding: 0 $lw-datepicker-padding;
 }
 
 .lw-datepicker-next {
@@ -80,19 +90,19 @@ $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepic
 }
 
 .lw-datepicker-dows li {
-  font-size: $lw-datepicker-cell-font-size - 3px;
-  line-height: $lw-datepicker-cell-font-size - 3px;
-  width: $lw-datepicker-cell-width ;
-  height: $lw-datepicker-cell-font-size;
-  background: $lw-datepicker-basecolor;
+  font-size: $lw-datepicker-base-font-size * 0.7;
+  line-height: $lw-datepicker-base-font-size * 0.7;
+  width: $lw-datepicker-cell-width;
+  height: $lw-datepicker-base-font-size * 0.8;
+  background: $lw-datepicker-base-color;
   border-left-width: $lw-datepicker-cell-border-width;
   border-style: $lw-datepicker-cell-border-style;
-  border-color: $lw-datepicker-basecolor;
+  border-color: $lw-datepicker-base-color;
   padding: 3px 0 0;
 }
 
 .lw-datepicker-week li {
-  font-size: $lw-datepicker-cell-font-size;
+  font-size: $lw-datepicker-base-font-size;
   width: $lw-datepicker-cell-width;
   height: $lw-datepicker-cell-height;
   line-height: $lw-datepicker-cell-height;
@@ -112,19 +122,19 @@ $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepic
 }
 
 .lw-datepicker-firstweek li:first-child {
-  @include border-radius(4px 0 0 0);
+  @include border-radius($lw-datepicker-border-radius 0 0 0);
 }
 
 .lw-datepicker-firstweek li:last-child {
-  @include border-radius(0 4px 0 0);
+  @include border-radius(0 $lw-datepicker-border-radius 0 0);
 }
 
 .lw-datepicker-lastweek li:first-child {
-  @include border-radius(0 0 0 4px);
+  @include border-radius(0 0 0 $lw-datepicker-border-radius);
 }
 
 .lw-datepicker-lastweek li:last-child {
-  @include border-radius(0 0 4px 0);
+  @include border-radius(0 0 $lw-datepicker-border-radius 0);
 }
 
 .lw-datepicker-week li:hover {
@@ -132,27 +142,44 @@ $lw-datepicker-font-color-neighbour: scale-saturation(contrast-color($lw-datepic
 }
 
 li.lw-datepicker-active-day,  li.lw-datepicker-active-day:hover {
-  color: $lw-datepicker-basecolor;
-  @include border-radius(2px);
+  position: relative;
+  color: $lw-datepicker-base-color;
+  background: none; 
+}
+
+li.lw-datepicker-active-day::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  content: '';
+  @include border-radius(floor($lw-datepicker-border-radius * 0.5));
   background: $lw-datepicker-font-color-base;
+  z-index: -1;
+}
+
+
+li.lw-datepicker-today{
+  @include border-radius(floor($lw-datepicker-border-radius * 0.6));
+//  background: $lw-datepicker-cell-border-color;
 }
 
 li.lw-datepicker-today span {
   display: block;
-  width: $lw-datepicker-cell-width - 2px;
-  height: $lw-datepicker-cell-width - 2px;
-  line-height: $lw-datepicker-cell-height - 2px;
-  border: 1px solid contrast-color($lw-datepicker-basecolor, darken($lw-datepicker-basecolor, 30%), lighten($lw-datepicker-basecolor, 40%), 50%);
-  @include border-radius(2px);
-;
+  width: $lw-datepicker-cell-width - $lw-datepicker-border-width * 2;
+  height: $lw-datepicker-cell-width - $lw-datepicker-border-width * 2;
+  line-height: $lw-datepicker-cell-height - $lw-datepicker-border-width * 2;
+  border: $lw-datepicker-border-width solid contrast-color($lw-datepicker-base-color, darken($lw-datepicker-base-color, 30%), lighten($lw-datepicker-base-color, 40%), 50%);
+  @include border-radius(floor($lw-datepicker-border-radius * 0.5));
 }
 
-li.lw-datepicker-today:hover {
+li.lw-datepicker-today:hover span {
   color: $lw-datepicker-font-color-base;
 }
 
 li.lw-datepicker-weekend {
-  background: contrast-color($lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 6%), lighten($lw-datepicker-cell-background, 6%), 50%);
+  background: contrast-color($lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 6%), lighten($lw-datepicker-cell-background, 6%), 30%);
 
 }
 
