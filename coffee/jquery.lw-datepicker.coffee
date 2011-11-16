@@ -73,18 +73,48 @@ class LightweightDatepicker
         classes.push 'lw-dp-weekend'
       if ((dayIndex + adjustedFirstDow) % 7) is 6
         classes.push 'lw-dp-week-last-column'
+      if remainingDays <= 0
+        classes.push 'lw-dp-neighbour-month-day'
       if classes.length
         classAttribute = " class='#{classes.join " "}'"
       dayIndex++
       """<li#{classAttribute}>#{day}</li>"""
     
+    currentDay = -1
+    # Render first week
     html = '<ul class="lw-dp-week lw-dp-firstweek">'
     if startDatePreviousMonth <= daysInPreviousMonth
       for day in [startDatePreviousMonth..daysInPreviousMonth]
         html += """<li class="lw-dp-neighbour-month-day">#{day}</li>"""
     for day in [1..daysInFirstWeek]
-      html += renderDay day
+      currentDay = day
+      html += renderDay currentDay
     html += '</ul>'
+
+    # Render common week
+    while remainingDays > 7
+      currentDay++
+      html += '<ul class="lw-dp-week">'
+      for day in [currentDay..currentDay+6]
+        currentDay = day
+        html += renderDay currentDay
+        remainingDays--
+      html += '</ul>'
+
+    # Render last week
+    daysInLastWeek = remainingDays
+    html += '<ul class="lw-dp-week lw-dp-lastweek">'
+    currentDay++
+    for day in [currentDay..currentDay+remainingDays-1]
+      currentDay = day
+      html += renderDay currentDay
+      remainingDays--
+    if 1 <= 7-daysInLastWeek
+      for day in [1..7-daysInLastWeek]
+        console.log day
+        html += renderDay day
+    html += '</ul>'
+
     @days.html html
 
 

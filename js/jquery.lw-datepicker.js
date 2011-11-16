@@ -48,7 +48,7 @@
       return this.updateMonth(-1);
     };
     LightweightDatepicker.prototype.updateMonth = function(diff) {
-      var adjustedFirstDow, cd, day, dayIndex, daysInFirstWeek, daysInPreviousMonth, firstDayDow, html, remainingDays, renderDay, startDatePreviousMonth;
+      var adjustedFirstDow, cd, currentDay, day, dayIndex, daysInFirstWeek, daysInLastWeek, daysInPreviousMonth, firstDayDow, html, remainingDays, renderDay, startDatePreviousMonth, _ref, _ref2, _ref3;
       if (diff == null) {
         diff = 0;
       }
@@ -80,12 +80,16 @@
         if (((dayIndex + adjustedFirstDow) % 7) === 6) {
           classes.push('lw-dp-week-last-column');
         }
+        if (remainingDays <= 0) {
+          classes.push('lw-dp-neighbour-month-day');
+        }
         if (classes.length) {
           classAttribute = " class='" + (classes.join(" ")) + "'";
         }
         dayIndex++;
         return "<li" + classAttribute + ">" + day + "</li>";
       };
+      currentDay = -1;
       html = '<ul class="lw-dp-week lw-dp-firstweek">';
       if (startDatePreviousMonth <= daysInPreviousMonth) {
         for (day = startDatePreviousMonth; startDatePreviousMonth <= daysInPreviousMonth ? day <= daysInPreviousMonth : day >= daysInPreviousMonth; startDatePreviousMonth <= daysInPreviousMonth ? day++ : day--) {
@@ -93,7 +97,33 @@
         }
       }
       for (day = 1; 1 <= daysInFirstWeek ? day <= daysInFirstWeek : day >= daysInFirstWeek; 1 <= daysInFirstWeek ? day++ : day--) {
-        html += renderDay(day);
+        currentDay = day;
+        html += renderDay(currentDay);
+      }
+      html += '</ul>';
+      while (remainingDays > 7) {
+        currentDay++;
+        html += '<ul class="lw-dp-week">';
+        for (day = currentDay, _ref = currentDay + 6; currentDay <= _ref ? day <= _ref : day >= _ref; currentDay <= _ref ? day++ : day--) {
+          currentDay = day;
+          html += renderDay(currentDay);
+          remainingDays--;
+        }
+        html += '</ul>';
+      }
+      daysInLastWeek = remainingDays;
+      html += '<ul class="lw-dp-week lw-dp-lastweek">';
+      currentDay++;
+      for (day = currentDay, _ref2 = currentDay + remainingDays - 1; currentDay <= _ref2 ? day <= _ref2 : day >= _ref2; currentDay <= _ref2 ? day++ : day--) {
+        currentDay = day;
+        html += renderDay(currentDay);
+        remainingDays--;
+      }
+      if (1 <= 7 - daysInLastWeek) {
+        for (day = 1, _ref3 = 7 - daysInLastWeek; 1 <= _ref3 ? day <= _ref3 : day >= _ref3; 1 <= _ref3 ? day++ : day--) {
+          console.log(day);
+          html += renderDay(day);
+        }
       }
       html += '</ul>';
       return this.days.html(html);
