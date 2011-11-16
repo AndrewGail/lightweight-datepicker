@@ -1,3 +1,6 @@
+$lw-dp-base-color: #ccf;
+$lw-dp-base-font-size: 12px;
+
 @import "compass/reset";
 @import "lw-datepicker";
 
@@ -5,4 +8,9 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #111;  
+}
+
+.lw-dp {
+  left: 40px;
+  top: 24px;
 }

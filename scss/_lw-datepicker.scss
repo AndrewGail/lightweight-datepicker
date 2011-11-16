@@ -10,7 +10,7 @@
 }
 
 // Base
-$lw-dp-base-color: #fcc !default;
+$lw-dp-base-color: #fff !default;
 $lw-dp-base-font-size: 12px !default;
 
 // Cells
@@ -34,6 +34,7 @@ $lw-dp-cell-border-style: solid !default;
 $lw-dp-cell-border-color: $lw-dp-base-color !default;
 
 // Container
+$lw-dp-z-index: 100 !default;
 $lw-dp-width: floor($lw-dp-cell-width * 7 + $lw-dp-cell-border-width * 8);
 $lw-dp-padding: floor($lw-dp-base-font-size * 0.4) !default;
 $lw-dp-background: $lw-dp-base-color !default;
@@ -48,6 +49,7 @@ $lw-dp-border-color: contrast-color(
 $lw-dp-border-radius: floor($lw-dp-base-font-size * 0.4);
 
 // Fonts
+$lw-dp-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 $lw-dp-font-color: scale-saturation($lw-dp-cell-background, -75%) !default;
 $lw-dp-font-color: contrast-color(
   $lw-dp-font-color,
@@ -65,41 +67,72 @@ $lw-dp-font-color-neighbour: scale-saturation(
   -50%
 ) !default;
 
+// Colors
+$lw-dp-desaturated-color: scale-saturation(
+  contrast-color(
+    $lw-dp-base-color,
+    darken($lw-dp-base-color, 30%),
+    lighten($lw-dp-base-color, 40%),
+    50%
+  ),
+  -50%
+) !default;
+
+$lw-dp-cell-weekend-background-color: contrast-color(
+  $lw-dp-cell-background,
+  darken($lw-dp-cell-background, 6%),
+  lighten($lw-dp-cell-background, 6%),
+  30%
+);
+
 .lw-dp {
-  display: block;
-  z-index: 1000;
+  @include experimental(user-select, none, -moz, -webkit, -o, not -ms, not -khtml, official);
+  position: absolute;
+  z-index: $lw-dp-z-index;
   overflow: hidden;
   cursor: default;
-
-  position: absolute;
-  left: 40px;
-  top: 24px;
-
   width: $lw-dp-width;
   background: $lw-dp-background;
   border-width: $lw-dp-border-width;
   border-style: $lw-dp-border-style;
   border-color: $lw-dp-border-color;
   padding: $lw-dp-padding;
+  font-family: $lw-dp-font-family;
   @include border-radius($lw-dp-border-radius);
+  @include box-shadow(rgba(0, 0, 0, 0.3) 0 2px 8px);
 }
 
 .lw-dp-toolbar {
   text-align: center;
   overflow: hidden;
   font-size: floor($lw-dp-base-font-size * 1.1);
-  line-height: floor($lw-dp-base-font-size * 1.1);
+  line-height: floor($lw-dp-base-font-size * 1.7);
   color: $lw-dp-font-color;
-  padding: $lw-dp-base-font-size / 5 0 $lw-dp-base-font-size / 2;
+  padding: 0 0 $lw-dp-base-font-size / 5;
 }
 
 .lw-dp-month {
   display: inline-block;
+  width: $lw-dp-width - $lw-dp-cell-width * 2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lw-dp-previous, .lw-dp-next {
   float: left;
-  padding: 0 $lw-dp-padding;
+  width: $lw-dp-cell-width;
+  height: 100%;
+  color: $lw-dp-font-color-neighbour;
+}
+
+.lw-dp-previous:hover, .lw-dp-next:hover {
+  color: $lw-dp-font-color;
+}
+
+.lw-dp-previous:active, .lw-dp-next:active {
+  color: $lw-dp-desaturated-color;
 }
 
 .lw-dp-next {
@@ -191,15 +224,7 @@ li.lw-dp-today span {
   width: $lw-dp-cell-width - $lw-dp-border-width * 2;
   height: $lw-dp-cell-width - $lw-dp-border-width * 2;
   line-height: $lw-dp-cell-height - $lw-dp-border-width * 2;
-  border: $lw-dp-border-width solid scale-saturation(
-    contrast-color(
-      $lw-dp-base-color,
-      darken($lw-dp-base-color, 30%),
-      lighten($lw-dp-base-color, 40%),
-      50%
-    ),
-    -50%
-  );
+  border: $lw-dp-border-width solid $lw-dp-desaturated-color;
   @include border-radius(floor($lw-dp-border-radius * 0.5));
 }
 
@@ -208,12 +233,7 @@ li.lw-dp-today:hover span {
 }
 
 li.lw-dp-weekend {
-  background: contrast-color(
-    $lw-dp-cell-background,
-    darken($lw-dp-cell-background, 6%),
-    lighten($lw-dp-cell-background, 6%),
-    30%
-  );
+  background: $lw-dp-cell-weekend-background-color;
 }
 
 li.lw-dp-neighbour-month-day {
