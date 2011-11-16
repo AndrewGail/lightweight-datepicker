@@ -74,10 +74,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   overflow: hidden;
   cursor: default;
   width: 155px;
-  background: #ccccff;
+  background: white;
   border-width: 1px;
   border-style: solid;
-  border-color: #9999ff;
+  border-color: #e6e6e6;
   padding: 4px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   -moz-border-radius: 4px;
@@ -98,7 +98,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   overflow: hidden;
   font-size: 13px;
   line-height: 20px;
-  color: #575775;
+  color: gray;
   padding: 0 0 2.4px;
 }
 
@@ -116,17 +116,17 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   float: left;
   width: 21px;
   height: 100%;
-  color: #8b8bc1;
+  color: #bfbfbf;
 }
 
 /* line 130, ../scss/_lw-datepicker.scss */
 .lw-dp-previous:hover, .lw-dp-next:hover {
-  color: #575775;
+  color: gray;
 }
 
 /* line 134, ../scss/_lw-datepicker.scss */
 .lw-dp-previous:active, .lw-dp-next:active {
-  color: #6666cc;
+  color: #b3b3b3;
 }
 
 /* line 138, ../scss/_lw-datepicker.scss */
@@ -139,7 +139,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
   float: left;
   text-align: center;
-  color: #575775;
+  color: gray;
 }
 
 /* line 149, ../scss/_lw-datepicker.scss */
@@ -148,10 +148,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   line-height: 8.4px;
   width: 21px;
   height: 9.6px;
-  background: #ccccff;
+  background: white;
   border-left-width: 1px;
   border-style: solid;
-  border-color: #ccccff;
+  border-color: white;
 }
 
 /* line 160, ../scss/_lw-datepicker.scss */
@@ -160,11 +160,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   width: 21px;
   height: 21px;
   line-height: 21px;
-  background: #adadeb;
+  background: #e6e6e6;
   border-left-width: 1px;
   border-top-width: 1px;
   border-style: solid;
-  border-color: #ccccff;
+  border-color: white;
 }
 
 /* line 172, ../scss/_lw-datepicker.scss */
@@ -219,13 +219,13 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 /* line 196, ../scss/_lw-datepicker.scss */
 .lw-dp-week li:hover {
-  background: #cecef3;
+  background: #fafafa;
 }
 
 /* line 200, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day, li.lw-dp-active-day:hover {
   position: relative;
-  color: #ccccff;
+  color: white;
   background: none;
 }
 
@@ -243,7 +243,7 @@ li.lw-dp-active-day::before {
   -ms-border-radius: 2px;
   -khtml-border-radius: 2px;
   border-radius: 2px;
-  background: #575775;
+  background: gray;
   z-index: -1;
 }
 
@@ -263,7 +263,7 @@ li.lw-dp-today span {
   width: 19px;
   height: 19px;
   line-height: 19px;
-  border: 1px solid #6666cc;
+  border: 1px solid #b3b3b3;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   -o-border-radius: 2px;
@@ -274,27 +274,27 @@ li.lw-dp-today span {
 
 /* line 231, ../scss/_lw-datepicker.scss */
 li.lw-dp-today:hover span {
-  color: #575775;
+  color: gray;
 }
 
 /* line 235, ../scss/_lw-datepicker.scss */
 li.lw-dp-weekend {
-  background: #9595e4;
+  background: #d6d6d6;
 }
 
 /* line 239, ../scss/_lw-datepicker.scss */
 li.lw-dp-neighbour-month-day {
-  color: #8b8bc1;
+  color: #bfbfbf;
 }
 
-/* line 7, ../scss/main.scss */
+/* line 4, ../scss/main.scss */
 body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #111;
 }
 
-/* line 13, ../scss/main.scss */
+/* line 10, ../scss/main.scss */
 .lw-dp {
   left: 40px;
   top: 24px;
