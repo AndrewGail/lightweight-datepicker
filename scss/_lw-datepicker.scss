@@ -10,7 +10,7 @@
 }
 
 // General
-$lw-datepicker-base-color: #000 !default;
+$lw-datepicker-base-color: #fcc !default;
 $lw-datepicker-base-font-size: 20px !default;
 $lw-datepicker-cell-width: floor($lw-datepicker-base-font-size * 1.8) !default;
 
@@ -63,18 +63,17 @@ $lw-datepicker-border-radius: floor($lw-datepicker-base-font-size * 0.4);
   text-align: center;
   overflow: hidden;
   font-size: floor($lw-datepicker-base-font-size * 1.1);
+  line-height: floor($lw-datepicker-base-font-size * 1.1);
   color: $lw-datepicker-font-color-base;
-  padding: 2px 0 2px;
+  padding: $lw-datepicker-base-font-size / 5 0 $lw-datepicker-base-font-size / 2;
 }
 
 .lw-datepicker-month {
   display: inline-block;
-  padding: 2px 0;
 }
 
 .lw-datepicker-previous, .lw-datepicker-next {
   float: left;
-  font-weight: bold;
   padding: 0 $lw-datepicker-padding;
 }
 
@@ -98,7 +97,6 @@ $lw-datepicker-border-radius: floor($lw-datepicker-base-font-size * 0.4);
   border-left-width: $lw-datepicker-cell-border-width;
   border-style: $lw-datepicker-cell-border-style;
   border-color: $lw-datepicker-base-color;
-  padding: 3px 0 0;
 }
 
 .lw-datepicker-week li {
@@ -159,10 +157,8 @@ li.lw-datepicker-active-day::before {
   z-index: -1;
 }
 
-
 li.lw-datepicker-today{
   @include border-radius(floor($lw-datepicker-border-radius * 0.6));
-//  background: $lw-datepicker-cell-border-color;
 }
 
 li.lw-datepicker-today span {
@@ -170,7 +166,15 @@ li.lw-datepicker-today span {
   width: $lw-datepicker-cell-width - $lw-datepicker-border-width * 2;
   height: $lw-datepicker-cell-width - $lw-datepicker-border-width * 2;
   line-height: $lw-datepicker-cell-height - $lw-datepicker-border-width * 2;
-  border: $lw-datepicker-border-width solid contrast-color($lw-datepicker-base-color, darken($lw-datepicker-base-color, 30%), lighten($lw-datepicker-base-color, 40%), 50%);
+  border: $lw-datepicker-border-width solid scale-saturation(
+    contrast-color(
+      $lw-datepicker-base-color,
+      darken($lw-datepicker-base-color, 30%),
+      lighten($lw-datepicker-base-color, 40%),
+      50%
+    ),
+    -50%
+  );
   @include border-radius(floor($lw-datepicker-border-radius * 0.5));
 }
 
@@ -179,8 +183,12 @@ li.lw-datepicker-today:hover span {
 }
 
 li.lw-datepicker-weekend {
-  background: contrast-color($lw-datepicker-cell-background, darken($lw-datepicker-cell-background, 6%), lighten($lw-datepicker-cell-background, 6%), 30%);
-
+  background: contrast-color(
+    $lw-datepicker-cell-background,
+    darken($lw-datepicker-cell-background, 6%),
+    lighten($lw-datepicker-cell-background, 6%),
+    30%
+  );
 }
 
 li.lw-datepicker-neighbour-month-day {
