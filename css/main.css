@@ -63,8 +63,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-/* line 42, ../scss/_lw-datepicker.scss */
-.lw-datepicker {
+/* line 68, ../scss/_lw-datepicker.scss */
+.lw-dp {
   display: block;
   z-index: 1000;
   overflow: hidden;
@@ -72,196 +72,196 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   position: absolute;
   left: 40px;
   top: 24px;
-  width: 268px;
+  width: 155px;
   background: #ffcccc;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   border-color: #ff9999;
-  padding: 8px;
-  -moz-border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -o-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -khtml-border-radius: 8px;
-  border-radius: 8px;
+  padding: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
 }
 
-/* line 62, ../scss/_lw-datepicker.scss */
-.lw-datepicker-toolbar {
+/* line 87, ../scss/_lw-datepicker.scss */
+.lw-dp-toolbar {
   text-align: center;
   overflow: hidden;
-  font-size: 22px;
-  line-height: 22px;
+  font-size: 13px;
+  line-height: 13px;
   color: #755757;
-  padding: 4px 0 10px;
+  padding: 2.4px 0 6px;
 }
 
-/* line 71, ../scss/_lw-datepicker.scss */
-.lw-datepicker-month {
+/* line 96, ../scss/_lw-datepicker.scss */
+.lw-dp-month {
   display: inline-block;
 }
 
-/* line 75, ../scss/_lw-datepicker.scss */
-.lw-datepicker-previous, .lw-datepicker-next {
+/* line 100, ../scss/_lw-datepicker.scss */
+.lw-dp-previous, .lw-dp-next {
   float: left;
-  padding: 0 8px;
+  padding: 0 4px;
 }
 
-/* line 80, ../scss/_lw-datepicker.scss */
-.lw-datepicker-next {
+/* line 105, ../scss/_lw-datepicker.scss */
+.lw-dp-next {
   float: right;
 }
 
-/* line 84, ../scss/_lw-datepicker.scss */
-.lw-datepicker-dows li, .lw-datepicker-week li {
+/* line 109, ../scss/_lw-datepicker.scss */
+.lw-dp-dows li, .lw-dp-week li {
   display: block;
   float: left;
   text-align: center;
   color: #755757;
 }
 
-/* line 91, ../scss/_lw-datepicker.scss */
-.lw-datepicker-dows li {
-  font-size: 14px;
-  line-height: 14px;
-  width: 36px;
-  height: 16px;
+/* line 116, ../scss/_lw-datepicker.scss */
+.lw-dp-dows li {
+  font-size: 8.4px;
+  line-height: 8.4px;
+  width: 21px;
+  height: 9.6px;
   background: #ffcccc;
-  border-left-width: 2px;
+  border-left-width: 1px;
   border-style: solid;
   border-color: #ffcccc;
 }
 
-/* line 102, ../scss/_lw-datepicker.scss */
-.lw-datepicker-week li {
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
+/* line 127, ../scss/_lw-datepicker.scss */
+.lw-dp-week li {
+  font-size: 12px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
   background: #ebadad;
-  border-left-width: 2px;
-  border-top-width: 2px;
+  border-left-width: 1px;
+  border-top-width: 1px;
   border-style: solid;
   border-color: #ffcccc;
 }
 
-/* line 114, ../scss/_lw-datepicker.scss */
-.lw-datepicker-dows-last-column, .lw-datepicker-week-last-column {
-  border-right-width: 2px;
+/* line 139, ../scss/_lw-datepicker.scss */
+.lw-dp-dows-last-column, .lw-dp-week-last-column {
+  border-right-width: 1px;
 }
 
-/* line 118, ../scss/_lw-datepicker.scss */
-.lw-datepicker-lastweek li {
-  border-bottom-width: 2px;
+/* line 143, ../scss/_lw-datepicker.scss */
+.lw-dp-lastweek li {
+  border-bottom-width: 1px;
 }
 
-/* line 122, ../scss/_lw-datepicker.scss */
-.lw-datepicker-firstweek li:first-child {
-  -moz-border-radius: 8px 0 0 0;
-  -webkit-border-radius: 8px 0 0 0;
-  -o-border-radius: 8px 0 0 0;
-  -ms-border-radius: 8px 0 0 0;
-  -khtml-border-radius: 8px 0 0 0;
-  border-radius: 8px 0 0 0;
+/* line 147, ../scss/_lw-datepicker.scss */
+.lw-dp-firstweek li:first-child {
+  -moz-border-radius: 4px 0 0 0;
+  -webkit-border-radius: 4px 0 0 0;
+  -o-border-radius: 4px 0 0 0;
+  -ms-border-radius: 4px 0 0 0;
+  -khtml-border-radius: 4px 0 0 0;
+  border-radius: 4px 0 0 0;
 }
 
-/* line 126, ../scss/_lw-datepicker.scss */
-.lw-datepicker-firstweek li:last-child {
-  -moz-border-radius: 0 8px 0 0;
-  -webkit-border-radius: 0 8px 0 0;
-  -o-border-radius: 0 8px 0 0;
-  -ms-border-radius: 0 8px 0 0;
-  -khtml-border-radius: 0 8px 0 0;
-  border-radius: 0 8px 0 0;
+/* line 151, ../scss/_lw-datepicker.scss */
+.lw-dp-firstweek li:last-child {
+  -moz-border-radius: 0 4px 0 0;
+  -webkit-border-radius: 0 4px 0 0;
+  -o-border-radius: 0 4px 0 0;
+  -ms-border-radius: 0 4px 0 0;
+  -khtml-border-radius: 0 4px 0 0;
+  border-radius: 0 4px 0 0;
 }
 
-/* line 130, ../scss/_lw-datepicker.scss */
-.lw-datepicker-lastweek li:first-child {
-  -moz-border-radius: 0 0 0 8px;
-  -webkit-border-radius: 0 0 0 8px;
-  -o-border-radius: 0 0 0 8px;
-  -ms-border-radius: 0 0 0 8px;
-  -khtml-border-radius: 0 0 0 8px;
-  border-radius: 0 0 0 8px;
+/* line 155, ../scss/_lw-datepicker.scss */
+.lw-dp-lastweek li:first-child {
+  -moz-border-radius: 0 0 0 4px;
+  -webkit-border-radius: 0 0 0 4px;
+  -o-border-radius: 0 0 0 4px;
+  -ms-border-radius: 0 0 0 4px;
+  -khtml-border-radius: 0 0 0 4px;
+  border-radius: 0 0 0 4px;
 }
 
-/* line 134, ../scss/_lw-datepicker.scss */
-.lw-datepicker-lastweek li:last-child {
-  -moz-border-radius: 0 0 8px 0;
-  -webkit-border-radius: 0 0 8px 0;
-  -o-border-radius: 0 0 8px 0;
-  -ms-border-radius: 0 0 8px 0;
-  -khtml-border-radius: 0 0 8px 0;
-  border-radius: 0 0 8px 0;
+/* line 159, ../scss/_lw-datepicker.scss */
+.lw-dp-lastweek li:last-child {
+  -moz-border-radius: 0 0 4px 0;
+  -webkit-border-radius: 0 0 4px 0;
+  -o-border-radius: 0 0 4px 0;
+  -ms-border-radius: 0 0 4px 0;
+  -khtml-border-radius: 0 0 4px 0;
+  border-radius: 0 0 4px 0;
 }
 
-/* line 138, ../scss/_lw-datepicker.scss */
-.lw-datepicker-week li:hover {
+/* line 163, ../scss/_lw-datepicker.scss */
+.lw-dp-week li:hover {
   background: #f3cece;
 }
 
-/* line 142, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-active-day, li.lw-datepicker-active-day:hover {
+/* line 167, ../scss/_lw-datepicker.scss */
+li.lw-dp-active-day, li.lw-dp-active-day:hover {
   position: relative;
   color: #ffcccc;
   background: none;
 }
 
-/* line 148, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-active-day::before {
+/* line 173, ../scss/_lw-datepicker.scss */
+li.lw-dp-active-day::before {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   right: 0;
   content: '';
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
   background: #755757;
   z-index: -1;
 }
 
-/* line 160, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-today {
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
+/* line 185, ../scss/_lw-datepicker.scss */
+li.lw-dp-today {
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
 }
 
-/* line 164, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-today span {
+/* line 189, ../scss/_lw-datepicker.scss */
+li.lw-dp-today span {
   display: block;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  border: 2px solid #cc6666;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
+  width: 19px;
+  height: 19px;
+  line-height: 19px;
+  border: 1px solid #cc6666;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
 }
 
-/* line 181, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-today:hover span {
+/* line 206, ../scss/_lw-datepicker.scss */
+li.lw-dp-today:hover span {
   color: #755757;
 }
 
-/* line 185, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-weekend {
+/* line 210, ../scss/_lw-datepicker.scss */
+li.lw-dp-weekend {
   background: #e49595;
 }
 
-/* line 194, ../scss/_lw-datepicker.scss */
-li.lw-datepicker-neighbour-month-day {
+/* line 219, ../scss/_lw-datepicker.scss */
+li.lw-dp-neighbour-month-day {
   color: #c18b8b;
 }
 
