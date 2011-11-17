@@ -197,22 +197,8 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   background: $lw-dp-cell-background-hover;
 }
 
-li.lw-dp-active-day,  li.lw-dp-active-day:hover {
-  position: relative;
-  color: $lw-dp-base-color;
-  background: none; 
-}
-
-li.lw-dp-active-day::before {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  content: '';
-  @include border-radius(floor($lw-dp-border-radius * 0.5));
-  background: $lw-dp-font-color;
-  z-index: -1;
+li.lw-dp-weekend {
+  background: $lw-dp-cell-weekend-background-color;
 }
 
 li.lw-dp-today{
@@ -232,8 +218,26 @@ li.lw-dp-today:hover span {
   color: $lw-dp-font-color;
 }
 
-li.lw-dp-weekend {
-  background: $lw-dp-cell-weekend-background-color;
+li.lw-dp-active-day,  li.lw-dp-active-day:hover {
+  position: relative;
+  color: $lw-dp-base-color;
+  background: none; 
+}
+
+li.lw-dp-active-day::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  content: '';
+  @include border-radius(floor($lw-dp-border-radius * 0.5));
+  background: $lw-dp-font-color;
+  z-index: -1;
+}
+
+li.lw-dp-active-day:hover span {
+  background: $lw-dp-cell-background;
 }
 
 li.lw-dp-neighbour-month-day {

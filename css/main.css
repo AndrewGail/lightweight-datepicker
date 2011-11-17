@@ -223,13 +223,48 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 /* line 200, ../scss/_lw-datepicker.scss */
+li.lw-dp-weekend {
+  background: #d6d6d6;
+}
+
+/* line 204, ../scss/_lw-datepicker.scss */
+li.lw-dp-today {
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* line 208, ../scss/_lw-datepicker.scss */
+li.lw-dp-today span {
+  display: block;
+  width: 19px;
+  height: 19px;
+  line-height: 19px;
+  border: 1px solid #b3b3b3;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* line 217, ../scss/_lw-datepicker.scss */
+li.lw-dp-today:hover span {
+  color: gray;
+}
+
+/* line 221, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day, li.lw-dp-active-day:hover {
   position: relative;
   color: white;
   background: none;
 }
 
-/* line 206, ../scss/_lw-datepicker.scss */
+/* line 227, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day::before {
   position: absolute;
   left: 0;
@@ -247,42 +282,12 @@ li.lw-dp-active-day::before {
   z-index: -1;
 }
 
-/* line 218, ../scss/_lw-datepicker.scss */
-li.lw-dp-today {
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  -o-border-radius: 2px;
-  -ms-border-radius: 2px;
-  -khtml-border-radius: 2px;
-  border-radius: 2px;
-}
-
-/* line 222, ../scss/_lw-datepicker.scss */
-li.lw-dp-today span {
-  display: block;
-  width: 19px;
-  height: 19px;
-  line-height: 19px;
-  border: 1px solid #b3b3b3;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  -o-border-radius: 2px;
-  -ms-border-radius: 2px;
-  -khtml-border-radius: 2px;
-  border-radius: 2px;
-}
-
-/* line 231, ../scss/_lw-datepicker.scss */
-li.lw-dp-today:hover span {
-  color: gray;
-}
-
-/* line 235, ../scss/_lw-datepicker.scss */
-li.lw-dp-weekend {
-  background: #d6d6d6;
-}
-
 /* line 239, ../scss/_lw-datepicker.scss */
+li.lw-dp-active-day:hover span {
+  background: #e6e6e6;
+}
+
+/* line 243, ../scss/_lw-datepicker.scss */
 li.lw-dp-neighbour-month-day {
   color: #bfbfbf;
 }

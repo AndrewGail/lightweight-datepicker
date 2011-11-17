@@ -48,13 +48,15 @@
       return this.updateMonth(-1);
     };
     LightweightDatepicker.prototype.updateMonth = function(diff) {
-      var adjustedDay, adjustedFirstDow, cd, day, dayIndex, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, html, remainingDays, renderDay, startDatePreviousMonth, _ref, _ref2;
+      var activeDay, adjustedDay, adjustedFirstDow, cd, day, dayIndex, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, html, remainingDays, renderDay, startDatePreviousMonth, today, _ref, _ref2;
       if (diff == null) {
         diff = 0;
       }
       this.currentDate.setMonth(this.currentDate.getMonth() + diff);
       this.month.html(monthNames[this.currentDate.getMonth()] + ', ' + this.currentDate.getFullYear());
       cd = this.currentDate;
+      today = cd.getDate() + 16;
+      activeDay = today - 4;
       firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay();
       adjustedFirstDow = firstDayDow - this.firstDowIndex;
       if (adjustedFirstDow < 0) {
@@ -70,9 +72,13 @@
       remainingDays = daysInMonth;
       dayIndex = daysInFirstWeek - 7;
       renderDay = function(day) {
-        var classAttribute, classes, dow;
+        var classAttribute, classes, dow, liContent;
         classes = [];
         classAttribute = '';
+        if (day <= 0) {
+          day = daysInPreviousMonth + day;
+        }
+        liContent = day;
         if (dayIndex < 0 || dayIndex >= daysInMonth) {
           classes.push('lw-dp-neighbour-month-day');
         }
@@ -86,16 +92,20 @@
         if (((dayIndex + adjustedFirstDow) % 7) === 6) {
           classes.push('lw-dp-week-last-column');
         }
+        if (dayIndex + 1 === today) {
+          classes.push('lw-dp-today');
+          liContent = "<span>" + day + "</span>";
+        }
+        if (dayIndex + 1 === activeDay) {
+          classes.push('lw-dp-active-day');
+        }
         if (classes.length) {
           classAttribute = " class='" + (classes.join(" ")) + "'";
         }
         if (++dayIndex >= 0) {
           remainingDays--;
         }
-        if (day <= 0) {
-          day = daysInPreviousMonth + day;
-        }
-        return "<li" + classAttribute + ">" + day + "</li>";
+        return "<li" + classAttribute + ">" + liContent + "</li>";
       };
       html = '';
       while (remainingDays > 0) {

@@ -56,6 +56,8 @@ class LightweightDatepicker
 
     # Updating dates
     cd = @currentDate
+    today = cd.getDate() + 16
+    activeDay = today - 4
     
     firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay()
     adjustedFirstDow = firstDayDow - @firstDowIndex
@@ -70,34 +72,49 @@ class LightweightDatepicker
     daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate()
     remainingDays = daysInMonth
     
+    # Day counter
     dayIndex = daysInFirstWeek - 7
 
+    # Renders a day
     renderDay = (day)->
       classes = []
       classAttribute = ''
 
-      # Handle days of next month
+      if day <= 0 then day = daysInPreviousMonth + day
+      liContent = day
+
+      # Handles days of next month
       if dayIndex < 0 or dayIndex >= daysInMonth
         classes.push 'lw-dp-neighbour-month-day'
       
-      # Handle weekends  
+      # Handles weekends  
       dow = (dayIndex + firstDayDow) % 7
       if dow < 0 then dow = 7 + dow
       if dow is 0 or dow is 6 # weekends
         classes.push 'lw-dp-weekend'
       
-      #Handle right borders
+      # Handles right borders
       if ((dayIndex + adjustedFirstDow) % 7) is 6
         classes.push 'lw-dp-week-last-column'
 
+      # Handles today
+      if dayIndex + 1 is today
+        classes.push 'lw-dp-today'
+        liContent = """<span>#{day}</span>"""
+
+      # Handles active day
+      if dayIndex + 1 is activeDay
+        classes.push 'lw-dp-active-day'
+
       if classes.length
         classAttribute = " class='#{classes.join " "}'"
+      
       if ++dayIndex >= 0 then remainingDays--
-      if day <= 0 then day = daysInPreviousMonth + day
-      """<li#{classAttribute}>#{day}</li>"""
+
+      """<li#{classAttribute}>#{liContent}</li>"""
     
     html = ''
-    # Render a week
+    # Renders a week
     while remainingDays > 0
       if remainingDays is daysInMonth  # First week
         html += '<ul class="lw-dp-week lw-dp-firstweek">'
@@ -111,8 +128,6 @@ class LightweightDatepicker
       html += '</ul>'
 
     @days.html html
-
-
 
   renderDows: ->
     first = @settings.firstDayOfTheWeek.toLowerCase()
