@@ -22,8 +22,11 @@
     return date1.getDate() === date2.getDate();
   };
   LightweightDatepicker = (function() {
-    LightweightDatepicker.prototype.activeDate = new Date(2011, 10, 8);
+    LightweightDatepicker.prototype.activeDate = null;
     function LightweightDatepicker(settings) {
+      this.bindTo = __bind(this.bindTo, this);
+      this.show = __bind(this.show, this);
+      this.hide = __bind(this.hide, this);
       var first, name, _i, _len;
       this.settings = settings;
       this.currentDate = new Date;
@@ -78,6 +81,7 @@
         return false;
       }, this));
       this.wrapper.appendTo(document.body);
+      this.hide();
     }
     LightweightDatepicker.prototype.onNextClick = function() {
       return this.updateMonth(1);
@@ -188,12 +192,51 @@
       html += '</ul>';
       return $(html);
     };
+    LightweightDatepicker.prototype.hide = function(e) {
+      $(this.wrapper).hide();
+      if (e != null) {
+        return this.saveData($(e.currentTarget));
+      }
+    };
+    LightweightDatepicker.prototype.show = function(e) {
+      var data;
+      $(this.wrapper).show();
+      if (e != null) {
+        data = $(e.currentTarget).data('lw-datepicker');
+        console.log(data.currentDate + '');
+        $.extend(this, data);
+      }
+      return this.updateMonth();
+    };
+    LightweightDatepicker.prototype.saveData = function($el) {
+      return $el.data('lw-datepicker', {
+        activeDate: this.activeDate,
+        currentDate: new Date(this.currentDate.getTime())
+      });
+    };
+    LightweightDatepicker.prototype.bindTo = function(el) {
+      var $el;
+      $el = $(el);
+      $el.bind('focus', this.show).bind('blur', this.hide);
+      return this.saveData($el);
+    };
     return LightweightDatepicker;
   })();
   $.fn.lwDatepicker = function(options) {
-    var picker;
+    var instance;
     options = $.extend(settings, options);
-    picker = new LightweightDatepicker(options);
-    return this.each(function() {});
+    instance = null;
+    return this.each(function() {
+      var picker;
+      if (options.multiple) {
+        picker = new LightweightDatepicker(options);
+        return picker.bindTo(this);
+      } else {
+        if (!instance) {
+          instance = new LightweightDatepicker(options);
+        }
+        return instance.bindTo(this);
+      }
+    });
   };
 }).call(this);

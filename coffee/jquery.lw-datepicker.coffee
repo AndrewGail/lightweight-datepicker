@@ -22,7 +22,7 @@ checkEqualDates = (date1, date2) ->
 
 class LightweightDatepicker
 
-  activeDate: new Date 2011, 10, 8
+  activeDate: null
 
   constructor: (settings) ->
     @settings = settings
@@ -76,6 +76,7 @@ class LightweightDatepicker
       false # prevent loosing focus from input
 
     @wrapper.appendTo document.body
+    @hide()
 
   onNextClick: ->
     @updateMonth 1
@@ -184,10 +185,38 @@ class LightweightDatepicker
     html += '</ul>'
     $ html # Creates jQuery object from html code
 
+  hide: (e)=>
+    $(@wrapper).hide()
+    if e? then @saveData $ e.currentTarget
+
+  show: (e)=>
+    $(@wrapper).show()
+    if e?
+      data = $(e.currentTarget).data 'lw-datepicker'
+      console.log data.currentDate + ''
+      $.extend @, data
+    @updateMonth()
+
+  saveData: ($el)->
+    $el.data 'lw-datepicker', 
+      activeDate: @activeDate
+      currentDate: new Date @currentDate.getTime()
+
+  bindTo: (el) =>
+    $el = $(el)
+    $el.bind('focus', @show).bind 'blur', @hide
+    @saveData $el
+
 # Adds plugin object to jQuery
 $.fn.lwDatepicker = (options) ->
   options = $.extend settings, options
-  picker = new LightweightDatepicker options
+  instance = null
 
-  # _Insert magic here._
   return @each ->
+    if options.multiple
+      picker = new LightweightDatepicker options
+      picker.bindTo @
+    else
+      if not instance
+        instance = new LightweightDatepicker options
+      instance.bindTo @
