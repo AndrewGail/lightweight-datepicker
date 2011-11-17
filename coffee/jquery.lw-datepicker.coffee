@@ -40,6 +40,11 @@ class LightweightDatepicker
     @previous.bind 'click', => @onPreviousClick()
     @updateMonth()
 
+    # Events binding
+    $(@days).delegate 'li:not(.lw-dp-active-day)', 'click', ->
+      $(@).parent().parent().find('li').removeClass 'lw-dp-active-day'
+      $(@).addClass "lw-dp-active-day"
+
     @wrapper.appendTo document.body
 
   onNextClick: ->
@@ -57,7 +62,8 @@ class LightweightDatepicker
     # Updating dates
     cd = @currentDate
     today = cd.getDate() + 16
-    activeDay = today - 4
+    activeDay = today
+    # activeDay = @activeDate.getDate() - 4
     
     firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay()
     adjustedFirstDow = firstDayDow - @firstDowIndex
@@ -76,7 +82,7 @@ class LightweightDatepicker
     dayIndex = daysInFirstWeek - 7
 
     # Renders a day
-    renderDay = (day)->
+    renderDay = (day) ->
       classes = []
       classAttribute = ''
 
@@ -98,7 +104,7 @@ class LightweightDatepicker
         classes.push 'lw-dp-week-last-column'
 
       # Handles today
-      if dayIndex + 1 is today
+      if dayIndex + 1 is today and 
         classes.push 'lw-dp-today'
         liContent = """<span>#{day}</span>"""
 

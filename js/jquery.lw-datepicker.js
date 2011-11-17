@@ -39,6 +39,10 @@
         return this.onPreviousClick();
       }, this));
       this.updateMonth();
+      $(this.days).delegate('li:not(.lw-dp-active-day)', 'click', function() {
+        $(this).parent().parent().find('li').removeClass('lw-dp-active-day');
+        return $(this).addClass("lw-dp-active-day");
+      });
       this.wrapper.appendTo(document.body);
     }
     LightweightDatepicker.prototype.onNextClick = function() {
@@ -56,7 +60,7 @@
       this.month.html(monthNames[this.currentDate.getMonth()] + ', ' + this.currentDate.getFullYear());
       cd = this.currentDate;
       today = cd.getDate() + 16;
-      activeDay = today - 4;
+      activeDay = today;
       firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay();
       adjustedFirstDow = firstDayDow - this.firstDowIndex;
       if (adjustedFirstDow < 0) {
