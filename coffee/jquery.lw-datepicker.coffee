@@ -9,6 +9,7 @@ settings =
   multiple: false
   firstDayOfTheWeek: 'mon'
   dateFormat: 'yyyy.mm.dd'
+  autoSwitchToNeighbourMonth: false
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -46,9 +47,20 @@ class LightweightDatepicker
     @updateMonth()
 
     # Events binding
-    $(@days).delegate 'li:not(.lw-dp-active-day)', 'click', ->
-      $(@).parent().parent().find('li').removeClass 'lw-dp-active-day'
-      $(@).addClass "lw-dp-active-day"
+    $(@days).delegate 'li:not(.lw-dp-active-day)', 'click', (e) =>
+      currentLi = $(e.currentTarget)
+      currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
+      currentLi.addClass 'lw-dp-active-day'
+      
+      year = @currentDate.getFullYear()
+      month = @currentDate.getMonth()
+      day = parseInt currentLi.text()
+
+      if currentLi.hasClass('lw-dp-neighbour-month-day')
+        diff = if day > 10 then -1 else 1
+
+      @activeDate = new Date(year, month + diff, day)
+      if @settings.autoSwitchToNeighbourMonth and diff? then @updateMonth diff
 
     @wrapper.appendTo document.body
 

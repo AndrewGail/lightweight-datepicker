@@ -7,7 +7,8 @@
   settings = {
     multiple: false,
     firstDayOfTheWeek: 'mon',
-    dateFormat: 'yyyy.mm.dd'
+    dateFormat: 'yyyy.mm.dd',
+    autoSwitchToNeighbourMonth: false
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -48,10 +49,22 @@
         return this.onPreviousClick();
       }, this));
       this.updateMonth();
-      $(this.days).delegate('li:not(.lw-dp-active-day)', 'click', function() {
-        $(this).parent().parent().find('li').removeClass('lw-dp-active-day');
-        return $(this).addClass("lw-dp-active-day");
-      });
+      $(this.days).delegate('li:not(.lw-dp-active-day)', 'click', __bind(function(e) {
+        var currentLi, day, diff, month, year;
+        currentLi = $(e.currentTarget);
+        currentLi.parent().parent().find('li').removeClass('lw-dp-active-day');
+        currentLi.addClass('lw-dp-active-day');
+        year = this.currentDate.getFullYear();
+        month = this.currentDate.getMonth();
+        day = parseInt(currentLi.text());
+        if (currentLi.hasClass('lw-dp-neighbour-month-day')) {
+          diff = day > 10 ? -1 : 1;
+        }
+        this.activeDate = new Date(year, month + diff, day);
+        if (this.settings.autoSwitchToNeighbourMonth && (diff != null)) {
+          return this.updateMonth(diff);
+        }
+      }, this));
       this.wrapper.appendTo(document.body);
     }
     LightweightDatepicker.prototype.onNextClick = function() {
