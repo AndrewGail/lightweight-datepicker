@@ -10,6 +10,8 @@ settings =
   firstDayOfTheWeek: 'mon'
   dateFormat: 'yyyy.mm.dd'
   autoSwitchToNeighbourMonth: false
+  startDate: new Date(2000, 0, 1)
+  endDate: new Date(2030, 11, 31)
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -46,21 +48,34 @@ class LightweightDatepicker
     @previous.bind 'click', => @onPreviousClick()
     @updateMonth()
 
+    @wrapper.bind 'mousedown', -> false
+
     # Events binding
     $(@days).delegate 'li:not(.lw-dp-active-day)', 'click', (e) =>
       currentLi = $(e.currentTarget)
-      currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
-      currentLi.addClass 'lw-dp-active-day'
-      
+
       year = @currentDate.getFullYear()
       month = @currentDate.getMonth()
       day = parseInt currentLi.text()
+      diff = 0
 
       if currentLi.hasClass('lw-dp-neighbour-month-day')
         diff = if day > 10 then -1 else 1
 
-      @activeDate = new Date(year, month + diff, day)
-      if @settings.autoSwitchToNeighbourMonth and diff? then @updateMonth diff
+      selectedDate = new Date(year, month + diff, day)
+        
+      # console.log ' ' + @settings.startDate
+      # console.log ' ' + selectedDate
+      # console.log ' ' + @settings.endDate
+
+      if selectedDate.getTime() >= @settings.startDate.getTime()
+        if selectedDate.getTime() <= @settings.endDate.getTime()
+          currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
+          currentLi.addClass 'lw-dp-active-day'
+          @activeDate = selectedDate
+          if @settings.autoSwitchToNeighbourMonth and diff isnt 0 then @updateMonth diff
+      
+      false # prevent loosing focus from input
 
     @wrapper.appendTo document.body
 

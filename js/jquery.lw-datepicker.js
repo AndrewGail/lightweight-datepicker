@@ -8,7 +8,9 @@
     multiple: false,
     firstDayOfTheWeek: 'mon',
     dateFormat: 'yyyy.mm.dd',
-    autoSwitchToNeighbourMonth: false
+    autoSwitchToNeighbourMonth: false,
+    startDate: new Date(2000, 0, 1),
+    endDate: new Date(2030, 11, 31)
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -49,21 +51,31 @@
         return this.onPreviousClick();
       }, this));
       this.updateMonth();
+      this.wrapper.bind('mousedown', function() {
+        return false;
+      });
       $(this.days).delegate('li:not(.lw-dp-active-day)', 'click', __bind(function(e) {
-        var currentLi, day, diff, month, year;
+        var currentLi, day, diff, month, selectedDate, year;
         currentLi = $(e.currentTarget);
-        currentLi.parent().parent().find('li').removeClass('lw-dp-active-day');
-        currentLi.addClass('lw-dp-active-day');
         year = this.currentDate.getFullYear();
         month = this.currentDate.getMonth();
         day = parseInt(currentLi.text());
+        diff = 0;
         if (currentLi.hasClass('lw-dp-neighbour-month-day')) {
           diff = day > 10 ? -1 : 1;
         }
-        this.activeDate = new Date(year, month + diff, day);
-        if (this.settings.autoSwitchToNeighbourMonth && (diff != null)) {
-          return this.updateMonth(diff);
+        selectedDate = new Date(year, month + diff, day);
+        if (selectedDate.getTime() >= this.settings.startDate.getTime()) {
+          if (selectedDate.getTime() <= this.settings.endDate.getTime()) {
+            currentLi.parent().parent().find('li').removeClass('lw-dp-active-day');
+            currentLi.addClass('lw-dp-active-day');
+            this.activeDate = selectedDate;
+            if (this.settings.autoSwitchToNeighbourMonth && diff !== 0) {
+              this.updateMonth(diff);
+            }
+          }
         }
+        return false;
       }, this));
       this.wrapper.appendTo(document.body);
     }
