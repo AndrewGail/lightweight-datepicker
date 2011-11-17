@@ -10,7 +10,7 @@
 }
 
 // Base
-$lw-dp-base-color: #fff !default;
+$lw-dp-base-color: #fcc !default;
 $lw-dp-base-font-size: 12px !default;
 
 // Cells
@@ -103,6 +103,7 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 }
 
 .lw-dp-toolbar {
+  position: relative;
   text-align: center;
   overflow: hidden;
   font-size: floor($lw-dp-base-font-size * 1.1);
@@ -114,17 +115,18 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 .lw-dp-month {
   display: inline-block;
   width: $lw-dp-width - $lw-dp-cell-width * 2;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .lw-dp-previous, .lw-dp-next {
-  float: left;
+  position: absolute;
+  top: 0;
   width: $lw-dp-cell-width;
   height: 100%;
   color: $lw-dp-font-color-neighbour;
+  cursor: pointer;
 }
 
 .lw-dp-previous:hover, .lw-dp-next:hover {
@@ -135,8 +137,12 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   color: $lw-dp-desaturated-color;
 }
 
+.lw-dp-previous {
+  left: 0;
+}
+
 .lw-dp-next {
-  float: right;
+  right: 0;
 }
 
 .lw-dp-dows li, .lw-dp-week li {
@@ -167,6 +173,7 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   border-top-width: $lw-dp-cell-border-width;
   border-style: $lw-dp-cell-border-style;
   border-color: $lw-dp-cell-border-color;
+  cursor: pointer;
 }
 
 .lw-dp-dows-last-column, .lw-dp-week-last-column {
@@ -242,4 +249,14 @@ li.lw-dp-active-day:hover span {
 
 li.lw-dp-neighbour-month-day {
   color: $lw-dp-font-color-neighbour;
+}
+
+li.lw-dp-out-of-interval, li.lw-dp-out-of-interval:hover {
+  background: contrast-color(
+    $lw-dp-cell-background,
+    lighten($lw-dp-cell-background, 5%),
+    darken($lw-dp-cell-background, 5%),
+    50%
+  );
+  cursor: default;
 }

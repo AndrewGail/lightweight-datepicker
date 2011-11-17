@@ -9,9 +9,9 @@ settings =
   multiple: false
   firstDayOfTheWeek: 'mon'
   dateFormat: 'yyyy.mm.dd'
-  autoSwitchToNeighbourMonth: false
-  startDate: new Date(2000, 0, 1)
-  endDate: new Date(2030, 11, 31)
+  autoSwitchToNeighbourMonth: true
+  startDate: new Date 2011, 9, 15
+  endDate: new Date 2011, 11, 15
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -20,14 +20,14 @@ checkEqualDates = (date1, date2) ->
 
 class LightweightDatepicker
 
-  activeDate: null
+  activeDate: new Date 2011, 10, 8
 
   constructor: (settings) ->
     @settings = settings
 
     @currentDate = new Date
-    # @currentDate = new Date(2021, 1, 1) # February 2021 takes 4 rows
-    # @currentDate = new Date(2012, 0, 1) # January 2012 takes 6 rows
+    # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
+    # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
     @todayDate = new Date
 
     first = @settings.firstDayOfTheWeek.toLowerCase()
@@ -62,12 +62,8 @@ class LightweightDatepicker
       if currentLi.hasClass('lw-dp-neighbour-month-day')
         diff = if day > 10 then -1 else 1
 
-      selectedDate = new Date(year, month + diff, day)
+      selectedDate = new Date year, month + diff, day
         
-      # console.log ' ' + @settings.startDate
-      # console.log ' ' + selectedDate
-      # console.log ' ' + @settings.endDate
-
       if selectedDate.getTime() >= @settings.startDate.getTime()
         if selectedDate.getTime() <= @settings.endDate.getTime()
           currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
@@ -94,16 +90,26 @@ class LightweightDatepicker
     # Updating dates
     cd = @currentDate
 
-    firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay()
+    # Enabling or disabling selectors of previous and next months
+    lastDayOfPreviousMonth = new Date cd.getFullYear(), cd.getMonth(), 0
+    if lastDayOfPreviousMonth.getTime() < @settings.startDate.getTime()
+      $(@previous).hide()
+    else $(@previous).show()
+    firstDayOfNextMonth = new Date cd.getFullYear(), cd.getMonth()+1, 1
+    if firstDayOfNextMonth.getTime() > @settings.endDate.getTime()
+      $(@next).hide()
+    else $(@next).show()
+
+    firstDayDow = (new Date cd.getFullYear(), cd.getMonth(), 1).getDay()
     lastDowIndex = (@firstDowIndex + 6) % 7
     
     daysInFirstWeek = (7 - firstDayDow + @firstDowIndex) % 7
     if daysInFirstWeek is 0 then daysInFirstWeek = 7
     
-    daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate()
+    daysInPreviousMonth = lastDayOfPreviousMonth.getDate()
     date = new Date cd.getFullYear(), cd.getMonth(), daysInFirstWeek - 6
     
-    daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate()
+    daysInMonth = (new Date cd.getFullYear(), cd.getMonth() + 1, 0).getDate()
     weeks = Math.ceil (daysInMonth + 6 - daysInFirstWeek) / 7.0
 
     renderDay = (day) =>
@@ -132,6 +138,14 @@ class LightweightDatepicker
       # Handles active day
       if @activeDate? and checkEqualDates day, @activeDate
         classes.push 'lw-dp-active-day'
+
+      # Handles date interval borders
+      if day.getTime() <= @settings.startDate.getTime()
+        classes.push 'lw-dp-out-of-interval'
+        liContent = ''
+      if day.getTime() >= @settings.endDate.getTime()
+        classes.push 'lw-dp-out-of-interval'
+        liContent = ''
 
       if classes.length
         classAttribute = " class='#{classes.join " "}'"

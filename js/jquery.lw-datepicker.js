@@ -8,9 +8,9 @@
     multiple: false,
     firstDayOfTheWeek: 'mon',
     dateFormat: 'yyyy.mm.dd',
-    autoSwitchToNeighbourMonth: false,
-    startDate: new Date(2000, 0, 1),
-    endDate: new Date(2030, 11, 31)
+    autoSwitchToNeighbourMonth: true,
+    startDate: new Date(2011, 9, 15),
+    endDate: new Date(2011, 11, 15)
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -22,7 +22,7 @@
     return date1.getDate() === date2.getDate();
   };
   LightweightDatepicker = (function() {
-    LightweightDatepicker.prototype.activeDate = null;
+    LightweightDatepicker.prototype.activeDate = new Date(2011, 10, 8);
     function LightweightDatepicker(settings) {
       var first, name, _i, _len;
       this.settings = settings;
@@ -86,20 +86,32 @@
       return this.updateMonth(-1);
     };
     LightweightDatepicker.prototype.updateMonth = function(diff) {
-      var cd, date, day, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, html, lastDowIndex, renderDay, week, weeks;
+      var cd, date, day, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, firstDayOfNextMonth, html, lastDayOfPreviousMonth, lastDowIndex, renderDay, week, weeks;
       if (diff == null) {
         diff = 0;
       }
       this.currentDate.setMonth(this.currentDate.getMonth() + diff);
       this.month.html(monthNames[this.currentDate.getMonth()] + ', ' + this.currentDate.getFullYear());
       cd = this.currentDate;
+      lastDayOfPreviousMonth = new Date(cd.getFullYear(), cd.getMonth(), 0);
+      if (lastDayOfPreviousMonth.getTime() < this.settings.startDate.getTime()) {
+        $(this.previous).hide();
+      } else {
+        $(this.previous).show();
+      }
+      firstDayOfNextMonth = new Date(cd.getFullYear(), cd.getMonth() + 1, 1);
+      if (firstDayOfNextMonth.getTime() > this.settings.endDate.getTime()) {
+        $(this.next).hide();
+      } else {
+        $(this.next).show();
+      }
       firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay();
       lastDowIndex = (this.firstDowIndex + 6) % 7;
       daysInFirstWeek = (7 - firstDayDow + this.firstDowIndex) % 7;
       if (daysInFirstWeek === 0) {
         daysInFirstWeek = 7;
       }
-      daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate();
+      daysInPreviousMonth = lastDayOfPreviousMonth.getDate();
       date = new Date(cd.getFullYear(), cd.getMonth(), daysInFirstWeek - 6);
       daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate();
       weeks = Math.ceil((daysInMonth + 6 - daysInFirstWeek) / 7.0);
@@ -123,6 +135,14 @@
         }
         if ((this.activeDate != null) && checkEqualDates(day, this.activeDate)) {
           classes.push('lw-dp-active-day');
+        }
+        if (day.getTime() <= this.settings.startDate.getTime()) {
+          classes.push('lw-dp-out-of-interval');
+          liContent = '';
+        }
+        if (day.getTime() >= this.settings.endDate.getTime()) {
+          classes.push('lw-dp-out-of-interval');
+          liContent = '';
         }
         if (classes.length) {
           classAttribute = " class='" + (classes.join(" ")) + "'";
