@@ -18,6 +18,8 @@ class LightweightDatepicker
     @settings = settings
 
     @currentDate = new Date
+    # @currentDate = new Date(2021, 1, 1) # February 2021 takes 4 rows
+    # @currentDate = new Date(2012, 0, 1) # January 2012 takes 6 rows
     @todayDate = new Date
 
     first = @settings.firstDayOfTheWeek.toLowerCase()
@@ -54,66 +56,59 @@ class LightweightDatepicker
 
     # Updating dates
     cd = @currentDate
-    dayIndex = 0
+    
     firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay()
     adjustedFirstDow = firstDayDow - @firstDowIndex
     if adjustedFirstDow < 0 then adjustedFirstDow = 7 + adjustedFirstDow
-    daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate()
+    
     daysInFirstWeek = (7 - firstDayDow + @firstDowIndex) % 7
     if daysInFirstWeek is 0 then daysInFirstWeek = 7
-    remainingDays = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate()
-    remainingDays -= daysInFirstWeek
+    
+    daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate()
     startDatePreviousMonth = daysInPreviousMonth - (6 - daysInFirstWeek)
+    
+    daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate()
+    remainingDays = daysInMonth
+    
+    dayIndex = daysInFirstWeek - 7
 
     renderDay = (day)->
       classes = []
       classAttribute = ''
+
+      # Handle days of next month
+      if dayIndex < 0 or dayIndex >= daysInMonth
+        classes.push 'lw-dp-neighbour-month-day'
+      
+      # Handle weekends  
       dow = (dayIndex + firstDayDow) % 7
+      if dow < 0 then dow = 7 + dow
       if dow is 0 or dow is 6 # weekends
         classes.push 'lw-dp-weekend'
+      
+      #Handle right borders
       if ((dayIndex + adjustedFirstDow) % 7) is 6
         classes.push 'lw-dp-week-last-column'
-      if remainingDays <= 0
-        classes.push 'lw-dp-neighbour-month-day'
+
       if classes.length
         classAttribute = " class='#{classes.join " "}'"
-      dayIndex++
+      if ++dayIndex >= 0 then remainingDays--
+      if day <= 0 then day = daysInPreviousMonth + day
       """<li#{classAttribute}>#{day}</li>"""
     
-    currentDay = -1
-    # Render first week
-    html = '<ul class="lw-dp-week lw-dp-firstweek">'
-    if startDatePreviousMonth <= daysInPreviousMonth
-      for day in [startDatePreviousMonth..daysInPreviousMonth]
-        html += """<li class="lw-dp-neighbour-month-day">#{day}</li>"""
-    for day in [1..daysInFirstWeek]
-      currentDay = day
-      html += renderDay currentDay
-    html += '</ul>'
-
-    # Render common week
-    while remainingDays > 7
-      currentDay++
-      html += '<ul class="lw-dp-week">'
-      for day in [currentDay..currentDay+6]
-        currentDay = day
-        html += renderDay currentDay
-        remainingDays--
+    html = ''
+    # Render a week
+    while remainingDays > 0
+      if remainingDays is daysInMonth  # First week
+        html += '<ul class="lw-dp-week lw-dp-firstweek">'
+      else if remainingDays <= 7 # Last week
+        html += '<ul class="lw-dp-week lw-dp-lastweek">'
+      else # Common week
+        html += '<ul class="lw-dp-week">'
+      for day in [dayIndex+1..dayIndex+7]
+        adjustedDay = if day > daysInMonth then day - daysInMonth else day
+        html += renderDay adjustedDay
       html += '</ul>'
-
-    # Render last week
-    daysInLastWeek = remainingDays
-    html += '<ul class="lw-dp-week lw-dp-lastweek">'
-    currentDay++
-    for day in [currentDay..currentDay+remainingDays-1]
-      currentDay = day
-      html += renderDay currentDay
-      remainingDays--
-    if 1 <= 7-daysInLastWeek
-      for day in [1..7-daysInLastWeek]
-        console.log day
-        html += renderDay day
-    html += '</ul>'
 
     @days.html html
 
@@ -139,48 +134,3 @@ $.fn.lwDatepicker = (options) ->
 
   # _Insert magic here._
   return @each ->
-    
-#   <ul class="lw-dp-week lw-dp-firstweek">
-#     <li class="lw-dp-neighbour-month-day">31</li>
-#     <li>1</li>
-#     <li>2</li>
-#     <li>3</li>
-#     <li>4</li>
-#     <li class="lw-dp-weekend">5</li>
-#     <li class="lw-dp-weekend lw-dp-week-last-column">6</li>
-#   </ul>
-#   <ul class="lw-dp-week">
-#     <li>7</li>
-#     <li>8</li>
-#     <li>9</li>
-#     <li class="lw-dp-today"><span>10</span></li>
-#     <li>11</li>
-#     <li class="lw-dp-weekend">12</li>
-#     <li class="lw-dp-weekend lw-dp-week-last-column">13</li>
-#   </ul>
-#   <ul class="lw-dp-week">
-#     <li>14</li><li class="lw-dp-active-day">15</li>
-#     <li>16</li>
-#     <li>17</li>
-#     <li>18</li>
-#     <li class="lw-dp-weekend">19</li>
-#     <li class="lw-dp-weekend lw-dp-week-last-column">20</li>
-#   </ul>
-#   <ul class="lw-dp-week">
-#     <li>21</li>
-#     <li>22</li>
-#     <li>23</li>
-#     <li>24</li>
-#     <li>25</li>
-#     <li class="lw-dp-weekend">26</li><li class="lw-dp-weekend lw-dp-week-last-column">27</li>
-#   </ul>
-#   <ul class="lw-dp-week lw-dp-lastweek">
-#     <li >28</li>
-#     <li >29</li>
-#     <li >30</li>
-#     <li class="lw-dp-neighbour-month-day">1</li>
-#     <li class="lw-dp-neighbour-month-day">2</li>
-#     <li class="lw-dp-neighbour-month-day lw-dp-weekend">3</li>
-#     <li class="lw-dp-neighbour-month-day lw-dp-weekend lw-dp-week-last-column">4</li>
-#   </ul>
-
