@@ -10,6 +10,11 @@ settings =
   firstDayOfTheWeek: 'mon'
   dateFormat: 'yyyy.mm.dd'
 
+checkEqualDates = (date1, date2) ->
+  return false if date1.getFullYear() isnt date2.getFullYear()
+  return false if date1.getMonth() isnt date2.getMonth() 
+  date1.getDate() is date2.getDate()
+
 class LightweightDatepicker
 
   activeDate: null
@@ -61,77 +66,65 @@ class LightweightDatepicker
 
     # Updating dates
     cd = @currentDate
-    today = cd.getDate() + 16
-    activeDay = today
-    # activeDay = @activeDate.getDate() - 4
-    
+
     firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay()
-    adjustedFirstDow = firstDayDow - @firstDowIndex
-    if adjustedFirstDow < 0 then adjustedFirstDow = 7 + adjustedFirstDow
+    lastDowIndex = (@firstDowIndex + 6) % 7
     
     daysInFirstWeek = (7 - firstDayDow + @firstDowIndex) % 7
     if daysInFirstWeek is 0 then daysInFirstWeek = 7
     
     daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate()
-    startDatePreviousMonth = daysInPreviousMonth - (6 - daysInFirstWeek)
+    date = new Date cd.getFullYear(), cd.getMonth(), daysInFirstWeek - 6
     
     daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate()
-    remainingDays = daysInMonth
-    
-    # Day counter
-    dayIndex = daysInFirstWeek - 7
+    weeks = Math.ceil (daysInMonth + 6 - daysInFirstWeek) / 7.0
 
-    # Renders a day
-    renderDay = (day) ->
+    renderDay = (day) =>
       classes = []
       classAttribute = ''
 
-      if day <= 0 then day = daysInPreviousMonth + day
-      liContent = day
+      liContent = day.getDate()
 
-      # Handles days of next month
-      if dayIndex < 0 or dayIndex >= daysInMonth
+      # Handles days of previous and next month
+      if day.getMonth() isnt cd.getMonth()
         classes.push 'lw-dp-neighbour-month-day'
       
-      # Handles weekends  
-      dow = (dayIndex + firstDayDow) % 7
-      if dow < 0 then dow = 7 + dow
-      if dow is 0 or dow is 6 # weekends
+      # Handles weekends
+      if day.getDay() is 0 or day.getDay() is 6 # weekends
         classes.push 'lw-dp-weekend'
       
       # Handles right borders
-      if ((dayIndex + adjustedFirstDow) % 7) is 6
+      if day.getDay() is lastDowIndex
         classes.push 'lw-dp-week-last-column'
 
       # Handles today
-      if dayIndex + 1 is today and 
+      if checkEqualDates day, @todayDate
         classes.push 'lw-dp-today'
-        liContent = """<span>#{day}</span>"""
+        liContent = """<span>#{liContent}</span>"""
 
       # Handles active day
-      if dayIndex + 1 is activeDay
+      if @activeDate? and checkEqualDates day, @activeDate
         classes.push 'lw-dp-active-day'
 
       if classes.length
         classAttribute = " class='#{classes.join " "}'"
       
-      if ++dayIndex >= 0 then remainingDays--
+      day.setDate day.getDate() + 1
 
       """<li#{classAttribute}>#{liContent}</li>"""
-    
+
     html = ''
-    # Renders a week
-    while remainingDays > 0
-      if remainingDays is daysInMonth  # First week
+
+    for week in [1..weeks]
+      if week is 1
         html += '<ul class="lw-dp-week lw-dp-firstweek">'
-      else if remainingDays <= 7 # Last week
+      else if week is weeks
         html += '<ul class="lw-dp-week lw-dp-lastweek">'
       else # Common week
         html += '<ul class="lw-dp-week">'
-      for day in [dayIndex+1..dayIndex+7]
-        adjustedDay = if day > daysInMonth then day - daysInMonth else day
-        html += renderDay adjustedDay
-      html += '</ul>'
+      for day in [1..7]
+        html += renderDay date
+      html += '</ul>'    
 
     @days.html html
 

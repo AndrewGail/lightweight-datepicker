@@ -1,5 +1,5 @@
 (function() {
-  var $, LightweightDatepicker, dowNames, monthNames, settings;
+  var $, LightweightDatepicker, checkEqualDates, dowNames, monthNames, settings;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $ = jQuery;
   dowNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -8,6 +8,15 @@
     multiple: false,
     firstDayOfTheWeek: 'mon',
     dateFormat: 'yyyy.mm.dd'
+  };
+  checkEqualDates = function(date1, date2) {
+    if (date1.getFullYear() !== date2.getFullYear()) {
+      return false;
+    }
+    if (date1.getMonth() !== date2.getMonth()) {
+      return false;
+    }
+    return date1.getDate() === date2.getDate();
   };
   LightweightDatepicker = (function() {
     LightweightDatepicker.prototype.activeDate = null;
@@ -52,77 +61,61 @@
       return this.updateMonth(-1);
     };
     LightweightDatepicker.prototype.updateMonth = function(diff) {
-      var activeDay, adjustedDay, adjustedFirstDow, cd, day, dayIndex, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, html, remainingDays, renderDay, startDatePreviousMonth, today, _ref, _ref2;
+      var cd, date, day, daysInFirstWeek, daysInMonth, daysInPreviousMonth, firstDayDow, html, lastDowIndex, renderDay, week, weeks;
       if (diff == null) {
         diff = 0;
       }
       this.currentDate.setMonth(this.currentDate.getMonth() + diff);
       this.month.html(monthNames[this.currentDate.getMonth()] + ', ' + this.currentDate.getFullYear());
       cd = this.currentDate;
-      today = cd.getDate() + 16;
-      activeDay = today;
       firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay();
-      adjustedFirstDow = firstDayDow - this.firstDowIndex;
-      if (adjustedFirstDow < 0) {
-        adjustedFirstDow = 7 + adjustedFirstDow;
-      }
+      lastDowIndex = (this.firstDowIndex + 6) % 7;
       daysInFirstWeek = (7 - firstDayDow + this.firstDowIndex) % 7;
       if (daysInFirstWeek === 0) {
         daysInFirstWeek = 7;
       }
       daysInPreviousMonth = (new Date(cd.getFullYear(), cd.getMonth(), 0)).getDate();
-      startDatePreviousMonth = daysInPreviousMonth - (6 - daysInFirstWeek);
+      date = new Date(cd.getFullYear(), cd.getMonth(), daysInFirstWeek - 6);
       daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate();
-      remainingDays = daysInMonth;
-      dayIndex = daysInFirstWeek - 7;
-      renderDay = function(day) {
-        var classAttribute, classes, dow, liContent;
+      weeks = Math.ceil((daysInMonth + 6 - daysInFirstWeek) / 7.0);
+      renderDay = __bind(function(day) {
+        var classAttribute, classes, liContent;
         classes = [];
         classAttribute = '';
-        if (day <= 0) {
-          day = daysInPreviousMonth + day;
-        }
-        liContent = day;
-        if (dayIndex < 0 || dayIndex >= daysInMonth) {
+        liContent = day.getDate();
+        if (day.getMonth() !== cd.getMonth()) {
           classes.push('lw-dp-neighbour-month-day');
         }
-        dow = (dayIndex + firstDayDow) % 7;
-        if (dow < 0) {
-          dow = 7 + dow;
-        }
-        if (dow === 0 || dow === 6) {
+        if (day.getDay() === 0 || day.getDay() === 6) {
           classes.push('lw-dp-weekend');
         }
-        if (((dayIndex + adjustedFirstDow) % 7) === 6) {
+        if (day.getDay() === lastDowIndex) {
           classes.push('lw-dp-week-last-column');
         }
-        if (dayIndex + 1 === today) {
+        if (checkEqualDates(day, this.todayDate)) {
           classes.push('lw-dp-today');
-          liContent = "<span>" + day + "</span>";
+          liContent = "<span>" + liContent + "</span>";
         }
-        if (dayIndex + 1 === activeDay) {
+        if ((this.activeDate != null) && checkEqualDates(day, this.activeDate)) {
           classes.push('lw-dp-active-day');
         }
         if (classes.length) {
           classAttribute = " class='" + (classes.join(" ")) + "'";
         }
-        if (++dayIndex >= 0) {
-          remainingDays--;
-        }
+        day.setDate(day.getDate() + 1);
         return "<li" + classAttribute + ">" + liContent + "</li>";
-      };
+      }, this);
       html = '';
-      while (remainingDays > 0) {
-        if (remainingDays === daysInMonth) {
+      for (week = 1; 1 <= weeks ? week <= weeks : week >= weeks; 1 <= weeks ? week++ : week--) {
+        if (week === 1) {
           html += '<ul class="lw-dp-week lw-dp-firstweek">';
-        } else if (remainingDays <= 7) {
+        } else if (week === weeks) {
           html += '<ul class="lw-dp-week lw-dp-lastweek">';
         } else {
           html += '<ul class="lw-dp-week">';
         }
-        for (day = _ref = dayIndex + 1, _ref2 = dayIndex + 7; _ref <= _ref2 ? day <= _ref2 : day >= _ref2; _ref <= _ref2 ? day++ : day--) {
-          adjustedDay = day > daysInMonth ? day - daysInMonth : day;
-          html += renderDay(adjustedDay);
+        for (day = 1; day <= 7; day++) {
+          html += renderDay(date);
         }
         html += '</ul>';
       }
