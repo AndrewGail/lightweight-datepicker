@@ -9,8 +9,8 @@
     firstDayOfTheWeek: 'mon',
     dateFormat: 'yyyy.mm.dd',
     autoSwitchToNeighbourMonth: true,
-    startDate: new Date(2011, 9, 15),
-    endDate: new Date(2011, 11, 15)
+    startDate: new Date(2000, 0, 1),
+    endDate: new Date(2030, 31, 1)
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -114,7 +114,7 @@
       daysInPreviousMonth = lastDayOfPreviousMonth.getDate();
       date = new Date(cd.getFullYear(), cd.getMonth(), daysInFirstWeek - 6);
       daysInMonth = (new Date(cd.getFullYear(), cd.getMonth() + 1, 0)).getDate();
-      weeks = Math.ceil((daysInMonth + 6 - daysInFirstWeek) / 7.0);
+      weeks = Math.ceil((daysInMonth + 7 - daysInFirstWeek) / 7.0);
       renderDay = __bind(function(day) {
         var classAttribute, classes, liContent;
         classes = [];
