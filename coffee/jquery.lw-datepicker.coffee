@@ -245,7 +245,7 @@ class LightweightDatepicker
     # Add check for interval
     return !isNaN(date.getTime())    
 
-  # Saces data to jQuery...
+  # Saves data to jQuery...
   saveData: ($el) ->
     parsedDate = @parseDate $el.val()
     if @isDateValid parsedDate
@@ -269,6 +269,7 @@ class LightweightDatepicker
     $el.bind 'keyup', @handleKeyUp
     @saveData $el
     @updateInput $el
+    @updateMonth() 
 
   # Selects same day in changed month
   changeMonth: =>

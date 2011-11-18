@@ -273,7 +273,8 @@
       }, this));
       $el.bind('keyup', this.handleKeyUp);
       this.saveData($el);
-      return this.updateInput($el);
+      this.updateInput($el);
+      return this.updateMonth();
     };
     LightweightDatepicker.prototype.changeMonth = function() {
       var activeDate, activeIndex, days;
