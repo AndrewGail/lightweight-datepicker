@@ -185,19 +185,18 @@ class LightweightDatepicker
     html += '</ul>'
     $ html # Creates jQuery object from html code
 
-  hide: (e)=>
-    $(@wrapper).hide()
+  hide: (e) =>
+    $(@wrapper).addClass('lw-dp-hidden')
     if e? then @saveData $ e.currentTarget
 
-  show: (e)=>
-    $(@wrapper).show()
+  show: (e) =>
+    $(@wrapper).removeClass('lw-dp-hidden')
     if e?
       data = $(e.currentTarget).data 'lw-datepicker'
-      console.log data.currentDate + ''
       $.extend @, data
     @updateMonth()
 
-  saveData: ($el)->
+  saveData: ($el) ->
     $el.data 'lw-datepicker', 
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()

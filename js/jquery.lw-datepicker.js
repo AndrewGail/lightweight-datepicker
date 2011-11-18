@@ -193,17 +193,16 @@
       return $(html);
     };
     LightweightDatepicker.prototype.hide = function(e) {
-      $(this.wrapper).hide();
+      $(this.wrapper).addClass('lw-dp-hidden');
       if (e != null) {
         return this.saveData($(e.currentTarget));
       }
     };
     LightweightDatepicker.prototype.show = function(e) {
       var data;
-      $(this.wrapper).show();
+      $(this.wrapper).removeClass('lw-dp-hidden');
       if (e != null) {
         data = $(e.currentTarget).data('lw-datepicker');
-        console.log(data.currentDate + '');
         $.extend(this, data);
       }
       return this.updateMonth();

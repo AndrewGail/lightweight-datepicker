@@ -86,7 +86,6 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 );
 
 .lw-dp {
-  @include experimental(user-select, none, -moz, -webkit, -o, not -ms, not -khtml, official);
   position: absolute;
   z-index: $lw-dp-z-index;
   overflow: hidden;
@@ -100,6 +99,12 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   font-family: $lw-dp-font-family;
   @include border-radius($lw-dp-border-radius);
   @include box-shadow(rgba(0, 0, 0, 0.3) 0 2px 8px);
+  @include experimental(user-select, none, -moz, -webkit, -o, not -ms, not -khtml, official);
+}
+
+.lw-dp-hidden {
+  display: none;
+  box-shadow: none;
 }
 
 .lw-dp-toolbar {
@@ -228,20 +233,24 @@ li.lw-dp-today:hover span {
 li.lw-dp-active-day,  li.lw-dp-active-day:hover {
   position: relative;
   color: $lw-dp-base-color;
-  background: none; 
+  background: $lw-dp-font-color;
+  
+  &:nth-child(n) {
+    background: none; 
+  }
+  &::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    content: '';
+    @include border-radius(floor($lw-dp-border-radius * 0.5));
+    background: $lw-dp-font-color;
+    z-index: -1;
+  }
 }
 
-li.lw-dp-active-day::before {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  content: '';
-  @include border-radius(floor($lw-dp-border-radius * 0.5));
-  background: $lw-dp-font-color;
-  z-index: -1;
-}
 
 li.lw-dp-active-day:hover span {
   background: $lw-dp-cell-background;
