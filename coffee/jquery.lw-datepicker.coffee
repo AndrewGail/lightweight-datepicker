@@ -6,6 +6,7 @@ settings =
   onChange: null
   firstDayOfTheWeekIndex: 1
   autoFillToday: false
+  alwaysVisible: false
   parseDate: null
   formatDate: null
   startDate: null
@@ -225,7 +226,8 @@ class LightweightDatepicker
 
   # Hides day picker
   hide: (e) =>
-    $(@wrapper).addClass('lw-dp-hidden')
+    if !@settings.alwaysVisible
+      $(@wrapper).addClass('lw-dp-hidden')
     if e? then @saveData $ e.currentTarget
 
   # Shows day picker

@@ -7,6 +7,7 @@
     onChange: null,
     firstDayOfTheWeekIndex: 1,
     autoFillToday: false,
+    alwaysVisible: false,
     parseDate: null,
     formatDate: null,
     startDate: null,
@@ -224,7 +225,9 @@
       return $(html);
     };
     LightweightDatepicker.prototype.hide = function(e) {
-      $(this.wrapper).addClass('lw-dp-hidden');
+      if (!this.settings.alwaysVisible) {
+        $(this.wrapper).addClass('lw-dp-hidden');
+      }
       if (e != null) {
         return this.saveData($(e.currentTarget));
       }
