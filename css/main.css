@@ -161,7 +161,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   font-size: 8.4px;
   line-height: 8.4px;
   width: 21px;
-  height: 9.6px;
+  height: 9.24px;
   background: #ccddcc;
   border-left-width: 1px;
   border-style: solid;
@@ -300,17 +300,17 @@ li.lw-dp-active-day::before, li.lw-dp-active-day:hover::before {
   z-index: -1;
 }
 
-/* line 255, ../scss/_lw-datepicker.scss */
+/* line 254, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day:hover span {
   background: #b3c3b3;
 }
 
-/* line 259, ../scss/_lw-datepicker.scss */
+/* line 258, ../scss/_lw-datepicker.scss */
 li.lw-dp-neighbour-month-day {
   color: #8e9b8e;
 }
 
-/* line 263, ../scss/_lw-datepicker.scss */
+/* line 262, ../scss/_lw-datepicker.scss */
 li.lw-dp-out-of-interval, li.lw-dp-out-of-interval:hover {
   background: #c1cec1;
   cursor: default;

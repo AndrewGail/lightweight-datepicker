@@ -1,19 +1,20 @@
 # References jQuery
 $ = jQuery
 
-dowNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
-monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-
 settings = 
   multiple: false
-  firstDayOfTheWeek: 'mon'
+  firstDayOfTheWeekIndex: 1
   dateFormat: 'yyyy.mm.dd'
-  autoSwitchToNeighbourMonth: true
-  startDate: new Date 2000, 0, 1
-  endDate: new Date 2030, 31, 1
+  startDate: null
+  endDate: null
   # startDate: new Date 2011, 9, 15
-  # endDate: new Date 2011, 11, 15
+  # endDate: new Date 2012, 1, 15
+  dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
+  monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December']
+  # dowNames: ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
+  # monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+  #   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -23,20 +24,16 @@ checkEqualDates = (date1, date2) ->
 class LightweightDatepicker
 
   activeDate: null
+  canSelectPreviousMonth: true
+  canSelectNextMonth: true
 
   constructor: (settings) ->
     @settings = settings
 
+    @todayDate = new Date
     @currentDate = new Date
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
-    @todayDate = new Date
-
-    first = @settings.firstDayOfTheWeek.toLowerCase()
-    @firstDowIndex = 0
-    for name in dowNames
-      if name is first then break
-      @firstDowIndex++
 
     @wrapper = $ '<div class="lw-dp"/>'
     @toolbar = $('<div class="lw-dp-toolbar"/>').appendTo @wrapper
@@ -55,28 +52,29 @@ class LightweightDatepicker
     # Events binding
     $(@days).delegate 'li:not(.lw-dp-active-day)', 'click', (e) =>
       currentLi = $(e.currentTarget)
-
-      year = @currentDate.getFullYear()
-      month = @currentDate.getMonth()
-      day = parseInt currentLi.text()
-      diff = 0
-
-      if currentLi.hasClass('lw-dp-neighbour-month-day')
-        diff = if day > 10 then -1 else 1
-
-      selectedDate = new Date year, month + diff, day
-        
-      if selectedDate.getTime() >= @settings.startDate.getTime()
-        if selectedDate.getTime() <= @settings.endDate.getTime()
-          currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
-          currentLi.addClass 'lw-dp-active-day'
-          @activeDate = selectedDate
-          if @settings.autoSwitchToNeighbourMonth and diff isnt 0 then @updateMonth diff
-      
-      false # prevent loosing focus from input
+      @selectDay currentLi
+      false # Prevent loosing focus from input    
 
     @wrapper.appendTo document.body
     @hide()
+
+  selectDay: (currentLi) ->
+    year = @currentDate.getFullYear()
+    month = @currentDate.getMonth()
+    day = parseInt currentLi.text()
+    diff = 0
+
+    if currentLi.hasClass('lw-dp-neighbour-month-day')
+      diff = if day > 10 then -1 else 1
+
+    selectedDate = new Date year, month + diff, day
+      
+    if not @settings.startDate? or selectedDate.getTime() >= @settings.startDate.getTime()
+      if not @settings.endDate? or selectedDate.getTime() <= @settings.endDate.getTime()
+        currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
+        currentLi.addClass 'lw-dp-active-day'
+        @activeDate = selectedDate
+        if diff isnt 0 then @updateMonth diff
 
   onNextClick: ->
     @updateMonth 1
@@ -84,29 +82,36 @@ class LightweightDatepicker
   onPreviousClick: ->
     @updateMonth -1
 
-  updateMonth: (diff = 0) ->
+  updateMonth: (diff = 0) =>
     @currentDate.setMonth @currentDate.getMonth() + diff
     
     # Updating month name and year
-    @month.html monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
+    @month.html @settings.monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
 
     # Updating dates
     cd = @currentDate
 
     # Enabling or disabling selectors of previous and next months
     lastDayOfPreviousMonth = new Date cd.getFullYear(), cd.getMonth(), 0
-    if lastDayOfPreviousMonth.getTime() < @settings.startDate.getTime()
+    if @settings.startDate? and lastDayOfPreviousMonth.getTime() < @settings.startDate.getTime()
+      @canSelectPreviousMonth = false
       $(@previous).hide()
-    else $(@previous).show()
+    else
+      @canSelectPreviousMonth = true
+      $(@previous).show()
+    
     firstDayOfNextMonth = new Date cd.getFullYear(), cd.getMonth()+1, 1
-    if firstDayOfNextMonth.getTime() > @settings.endDate.getTime()
+    if @settings.endDate? and firstDayOfNextMonth.getTime() > @settings.endDate.getTime()
+      @canSelectNextMonth = false
       $(@next).hide()
-    else $(@next).show()
+    else
+      @canSelectNextMonth = true
+      $(@next).show()
 
     firstDayDow = (new Date cd.getFullYear(), cd.getMonth(), 1).getDay()
-    lastDowIndex = (@firstDowIndex + 6) % 7
+    lastDowIndex = (@settings.firstDayOfTheWeekIndex + 6) % 7
     
-    daysInFirstWeek = (7 - firstDayDow + @firstDowIndex) % 7
+    daysInFirstWeek = (7 - firstDayDow + @settings.firstDayOfTheWeekIndex) % 7
     if daysInFirstWeek is 0 then daysInFirstWeek = 7
     
     daysInPreviousMonth = lastDayOfPreviousMonth.getDate()
@@ -143,10 +148,10 @@ class LightweightDatepicker
         classes.push 'lw-dp-active-day'
 
       # Handles date interval borders
-      if day.getTime() <= @settings.startDate.getTime()
+      if @settings.startDate and day.getTime() <= @settings.startDate.getTime()
         classes.push 'lw-dp-out-of-interval'
         liContent = ''
-      if day.getTime() >= @settings.endDate.getTime()
+      if @settings.endDate and day.getTime() >= @settings.endDate.getTime()
         classes.push 'lw-dp-out-of-interval'
         liContent = ''
 
@@ -173,11 +178,11 @@ class LightweightDatepicker
     @days.html html
 
   renderDows: ->
-    first = @settings.firstDayOfTheWeek.toLowerCase()
+    first = @settings.dowNames[@settings.firstDayOfTheWeekIndex]
     found = false
     html = '<ul class="lw-dp-dows">'
     temp = ''
-    for name in dowNames
+    for name in @settings.dowNames
       if name is first then found = true
       day = "<li>#{name}</li>"
       if found then html += day else temp += day
@@ -201,9 +206,53 @@ class LightweightDatepicker
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()
 
+  changeMonth: =>
+    if @activeDate?
+      activeIndex = @activeDate.getDate() - 1
+      activeDate = new Date @activeDate.getTime()
+      activeDate.setMonth @currentDate.getMonth()
+      activeDate.setFullYear @currentDate.getFullYear()
+      days = $(@days).find 'li:not(.lw-dp-neighbour-month-day)'
+      if days.length <= activeIndex
+        days.last().click()
+      else if @settings.endDate? and activeDate.getTime() > @settings.endDate.getTime()
+        days.eq(@settings.endDate.getDate() - 2).click()
+      else if @settings.startDate? and activeDate.getTime() < @settings.startDate.getTime()
+        days.eq(@settings.startDate.getDate()).click()
+      else
+        days.eq(activeIndex).click()
+
+  changeDay: (action) =>
+    direction = if action is 'prev' then 'last' else 'first'
+    if @activeDate?
+      $current = $(@days).find('li.lw-dp-active-day')
+      $el = $current[action]()
+      if $el.length then $el.click()
+      else $current.parent()[action]().children()[direction]().click()
+    else
+      $(@days).find('li.lw-dp-today').click()
+
+  handleKeyUp: (e) =>
+    keyCode = e.keyCode
+    switch keyCode
+      when 33 # PgUp
+        if @canSelectPreviousMonth
+          @onPreviousClick()
+          @changeMonth()
+      when 34 # PgDown
+        if @canSelectNextMonth
+          @onNextClick()
+          @changeMonth()
+      when 38 # Up
+        @changeDay 'prev'
+      when 40 # Down
+        @changeDay 'next'
+    @updateMonth
+
   bindTo: (el) =>
     $el = $(el)
     $el.bind('focus', @show).bind 'blur', @hide
+    $el.bind 'keyup', @handleKeyUp
     @saveData $el
 
 # Adds plugin object to jQuery

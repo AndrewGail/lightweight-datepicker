@@ -35,7 +35,7 @@ $lw-dp-cell-border-color: $lw-dp-base-color !default;
 
 // Container
 $lw-dp-z-index: 100 !default;
-$lw-dp-width: floor($lw-dp-cell-width * 7 + $lw-dp-cell-border-width * 8);
+$lw-dp-width: floor($lw-dp-cell-width * 7 + $lw-dp-cell-border-width * 8) !default;
 $lw-dp-padding: floor($lw-dp-base-font-size * 0.4) !default;
 $lw-dp-background: $lw-dp-base-color !default;
 $lw-dp-border-width: $lw-dp-cell-border-width !default;
@@ -46,10 +46,11 @@ $lw-dp-border-color: contrast-color(
   lighten($lw-dp-base-color, 25%),
   50%
 ) !default;
-$lw-dp-border-radius: floor($lw-dp-base-font-size * 0.4);
+$lw-dp-border-radius: floor($lw-dp-base-font-size * 0.4) !default;
 
 // Fonts
-$lw-dp-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$lw-dp-dow-font-size: $lw-dp-base-font-size * 0.7 !default;
+$lw-dp-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $lw-dp-font-color: scale-saturation($lw-dp-cell-background, -75%) !default;
 $lw-dp-font-color: contrast-color(
   $lw-dp-font-color,
@@ -77,13 +78,12 @@ $lw-dp-desaturated-color: scale-saturation(
   ),
   -50%
 ) !default;
-
 $lw-dp-cell-weekend-background-color: contrast-color(
   $lw-dp-cell-background,
   darken($lw-dp-cell-background, 6%),
   lighten($lw-dp-cell-background, 6%),
   30%
-);
+) !default;
 
 .lw-dp {
   position: absolute;
@@ -158,10 +158,10 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 }
 
 .lw-dp-dows li {
-  font-size: $lw-dp-base-font-size * 0.7;
-  line-height: $lw-dp-base-font-size * 0.7;
+  font-size: $lw-dp-dow-font-size;
+  line-height: $lw-dp-dow-font-size;
   width: $lw-dp-cell-width;
-  height: $lw-dp-base-font-size * 0.8;
+  height: $lw-dp-dow-font-size * 1.1;
   background: $lw-dp-base-color;
   border-left-width: $lw-dp-cell-border-width;
   border-style: $lw-dp-cell-border-style;
@@ -234,7 +234,7 @@ li.lw-dp-active-day,  li.lw-dp-active-day:hover {
   position: relative;
   color: $lw-dp-base-color;
   background: $lw-dp-font-color;
-  
+
   &:nth-child(n) {
     background: none; 
   }
@@ -250,7 +250,6 @@ li.lw-dp-active-day,  li.lw-dp-active-day:hover {
     z-index: -1;
   }
 }
-
 
 li.lw-dp-active-day:hover span {
   background: $lw-dp-cell-background;
