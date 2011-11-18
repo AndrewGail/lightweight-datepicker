@@ -10,8 +10,12 @@
   <script type="text/javascript">
     $(function(){
       $('#date1').lwDatepicker({
-        formatDate: function() {
-          return 'callback';
+        autoFillToday: true,
+        formatDate: function(date) {
+          return date.getFullYear() + '.' + (date.getMonth()+1) + '.' + date.getDate()
+        },
+        parseDate: function(string) {
+          return new Date (Date.parse(string));
         }
       });
     });

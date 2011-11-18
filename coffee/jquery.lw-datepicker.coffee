@@ -5,6 +5,8 @@ settings =
   multiple: false
   onChange: null
   firstDayOfTheWeekIndex: 1
+  autoFillToday: false
+  parseDate: null
   formatDate: null
   startDate: null
   endDate: null
@@ -60,6 +62,7 @@ class LightweightDatepicker
     @wrapper.appendTo document.body
     @hide()
 
+  # Changes active day
   selectDay: (currentLi) ->
     year = @currentDate.getFullYear()
     month = @currentDate.getMonth()
@@ -84,23 +87,33 @@ class LightweightDatepicker
       @settings.onChange @currentInput, @activeDate    
 
   # Changes value of binded input to active date
-  updateInput: ->
-    @currentInput.val @formatDate @activeDate
+  updateInput: ($el = @currentInput) ->
+    $el?.val @formatDate @activeDate
   
+  # Parses string to Date object
+  parseDate: (string) ->
+    if typeof @settings.parseDate is 'function'
+      @settings.parseDate string
+    else
+      new Date (Date.parse string)
+
   # Format date as text
   formatDate: (date) ->
     if typeof @settings.formatDate is 'function'
       @settings.formatDate date
     else
       # By default in USA format: M/d/yyyy
-      date.getDate() + '/' + (date.getMonth()+1) + '/' + date.getFullYear()
+      (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear()
 
+  # Show next month
   onNextClick: ->
     @updateMonth 1
 
+  # Show previous month
   onPreviousClick: ->
     @updateMonth -1
 
+  # Render month
   updateMonth: (diff = 0) =>
     @currentDate.setMonth @currentDate.getMonth() + diff
     
@@ -196,6 +209,7 @@ class LightweightDatepicker
 
     @days.html html
 
+  # Renders names of days of the week
   renderDows: ->
     first = @settings.dowNames[@settings.firstDayOfTheWeekIndex]
     found = false
@@ -209,10 +223,12 @@ class LightweightDatepicker
     html += '</ul>'
     $ html # Creates jQuery object from html code
 
+  # Hides day picker
   hide: (e) =>
     $(@wrapper).addClass('lw-dp-hidden')
     if e? then @saveData $ e.currentTarget
 
+  # Shows day picker
   show: (e) =>
     $(@wrapper).removeClass('lw-dp-hidden')
     if e?
@@ -220,18 +236,39 @@ class LightweightDatepicker
       $.extend @, data
     @updateMonth()
 
+  # Validates Date object
+  isDateValid: (date) ->
+    if Object.prototype.toString.call(date) isnt '[object Date]'
+      return false;
+    # Add check for interval
+    return !isNaN(date.getTime())    
+
+  # Saces data to jQuery...
   saveData: ($el) ->
-    $el.data 'lw-datepicker', 
+    parsedDate = @parseDate $el.val()
+    if @isDateValid parsedDate
+      @currentDate = new Date parsedDate.getTime()
+      @activeDate = new Date parsedDate.getTime()
+    else if @settings.autoFillToday
+      @activeDate = new Date @todayDate.getTime()
+    $el.data 'lw-datepicker',
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()
       currentInput: $el
 
+  # Adds current input to list of elements binded to this date picker
   bindTo: (el) =>
     $el = $(el)
-    $el.bind('focus', @show).bind 'blur', @hide
+    $el.bind 'focus', @show
+    $el.bind 'blur', @hide
+    $el.bind 'change', (e) =>
+      @saveData $(e.currentTarget)
+      @updateMonth()
     $el.bind 'keyup', @handleKeyUp
     @saveData $el
+    @updateInput $el
 
+  # Selects same day in changed month
   changeMonth: =>
     if @activeDate?
       activeIndex = @activeDate.getDate() - 1
@@ -248,6 +285,7 @@ class LightweightDatepicker
       else
         days.eq(activeIndex).click()
 
+  # Selects previous or next day
   changeDay: (action) =>
     direction = if action is 'prev' then 'last' else 'first'
     if @activeDate?
@@ -258,6 +296,7 @@ class LightweightDatepicker
     else
       $(@days).find('li.lw-dp-today').click()
 
+  # Handles keyboard-navigation
   handleKeyUp: (e) =>
     keyCode = e.keyCode
     switch keyCode
@@ -281,10 +320,11 @@ $.fn.lwDatepicker = (options) ->
   instance = null
 
   return @each ->
-    if options.multiple
-      picker = new LightweightDatepicker options
-      picker.bindTo @
-    else
-      if not instance
-        instance = new LightweightDatepicker options
-      instance.bindTo @
+    if $(@).is 'input, textarea'
+      if options.multiple
+        picker = new LightweightDatepicker options
+        picker.bindTo @
+      else
+        if not instance
+          instance = new LightweightDatepicker options
+        instance.bindTo @
