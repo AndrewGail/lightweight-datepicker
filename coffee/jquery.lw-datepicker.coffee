@@ -3,8 +3,9 @@ $ = jQuery
 
 settings = 
   multiple: false
+  onChange: null
   firstDayOfTheWeekIndex: 1
-  dateFormat: 'yyyy.mm.dd'
+  formatDate: null
   startDate: null
   endDate: null
   # startDate: new Date 2011, 9, 15
@@ -23,6 +24,7 @@ checkEqualDates = (date1, date2) ->
 
 class LightweightDatepicker
 
+  currentInput: null
   activeDate: null
   canSelectPreviousMonth: true
   canSelectNextMonth: true
@@ -74,7 +76,24 @@ class LightweightDatepicker
         currentLi.parent().parent().find('li').removeClass 'lw-dp-active-day'
         currentLi.addClass 'lw-dp-active-day'
         @activeDate = selectedDate
-        if diff isnt 0 then @updateMonth diff
+        if diff isnt 0 then @updateMonth diff  
+
+    @updateInput()
+
+    if typeof @settings.onChange is 'function'
+      @settings.onChange @currentInput, @activeDate    
+
+  # Changes value of binded input to active date
+  updateInput: ->
+    @currentInput.val @formatDate @activeDate
+  
+  # Format date as text
+  formatDate: (date) ->
+    if typeof @settings.formatDate is 'function'
+      @settings.formatDate date
+    else
+      # By default in USA format: M/d/yyyy
+      date.getDate() + '/' + (date.getMonth()+1) + '/' + date.getFullYear()
 
   onNextClick: ->
     @updateMonth 1
@@ -205,6 +224,13 @@ class LightweightDatepicker
     $el.data 'lw-datepicker', 
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()
+      currentInput: $el
+
+  bindTo: (el) =>
+    $el = $(el)
+    $el.bind('focus', @show).bind 'blur', @hide
+    $el.bind 'keyup', @handleKeyUp
+    @saveData $el
 
   changeMonth: =>
     if @activeDate?
@@ -248,12 +274,6 @@ class LightweightDatepicker
       when 40 # Down
         @changeDay 'next'
     @updateMonth
-
-  bindTo: (el) =>
-    $el = $(el)
-    $el.bind('focus', @show).bind 'blur', @hide
-    $el.bind 'keyup', @handleKeyUp
-    @saveData $el
 
 # Adds plugin object to jQuery
 $.fn.lwDatepicker = (options) ->

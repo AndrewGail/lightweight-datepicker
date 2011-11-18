@@ -9,15 +9,16 @@
   <script src="js/app.js"></script>
   <script type="text/javascript">
     $(function(){
-      $('#date1, #date2').lwDatepicker();
-      $('#date3').lwDatepicker();
+      $('#date1').lwDatepicker({
+        formatDate: function() {
+          return 'callback';
+        }
+      });
     });
   </script>
   <title>DatePicker</title>
 </head>
 <body>
 <input type="text" id="date1">
-<input type="text" id="date2">
-<input type="text" id="date3">
 </body>
 </html>
