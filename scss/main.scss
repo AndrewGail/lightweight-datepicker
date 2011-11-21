@@ -1,4 +1,5 @@
-$lw-dp-base-font-size: 20px;
+$lw-dp-base-color: #def;
+$lw-dp-base-font-size: 12px;
 
 @import "compass/reset";
 @import "lw-datepicker";
@@ -16,13 +17,7 @@ body {
 }
 
 input {
-  margin: 1px 30px
-}
-
-#test-wrapper {
-  position: absolute;
-  left: -30px;
-  top: 200px;
-  width: 600px;
+  margin: 10px 10px;
   border: 1px solid gray;
+  @include border-radius(4px);
 }

@@ -7,6 +7,7 @@
     onChange: null,
     firstDayOfTheWeekIndex: 1,
     autoFillToday: false,
+    autoHideAfterClick: false,
     alwaysVisible: false,
     parseDate: null,
     formatDate: null,
@@ -31,7 +32,7 @@
     LightweightDatepicker.prototype.canSelectPreviousMonth = true;
     LightweightDatepicker.prototype.canSelectNextMonth = true;
     function LightweightDatepicker(settings) {
-      this.handleKeyUp = __bind(this.handleKeyUp, this);
+      this.handleKeyDown = __bind(this.handleKeyDown, this);
       this.changeDay = __bind(this.changeDay, this);
       this.changeMonth = __bind(this.changeMonth, this);
       this.bindTo = __bind(this.bindTo, this);
@@ -64,11 +65,10 @@
         this.selectDay(currentLi);
         return false;
       }, this));
-      console.log('constructor');
       this.wrapper.appendTo(document.body);
     }
     LightweightDatepicker.prototype.selectDay = function(currentLi) {
-      var day, diff, month, selectedDate, year;
+      var day, diff, month, selectedDate, year, _ref;
       year = this.currentDate.getFullYear();
       month = this.currentDate.getMonth();
       day = parseInt(currentLi.text());
@@ -88,6 +88,11 @@
         }
       }
       this.updateInput();
+      if (this.settings.autoHideAfterClick) {
+        if ((_ref = this.currentInput) != null) {
+          _ref.blur();
+        }
+      }
       if (typeof this.settings.onChange === 'function') {
         return this.settings.onChange(this.currentInput, this.activeDate);
       }
@@ -231,16 +236,19 @@
       return $(html);
     };
     LightweightDatepicker.prototype.updatePosition = function(input) {
-      var left, top;
-      left = input.offset().left;
-      if ($('body').width() > left + this.wrapper.outerWidth()) {
+      var inputOffset, left, top, wrapperOuterHeight, wrapperOuterWidth;
+      inputOffset = input.offset();
+      wrapperOuterWidth = this.wrapper.outerWidth();
+      wrapperOuterHeight = this.wrapper.outerHeight();
+      left = inputOffset.left;
+      if ($('body').width() > left + wrapperOuterWidth) {
         this.wrapper.css({
           'left': left
         });
       } else {
-        if (input.offset().left > this.wrapper.outerWidth() + this.settings.margin) {
+        if (inputOffset.left > wrapperOuterWidth + this.settings.margin) {
           this.wrapper.css({
-            'left': input.offset().left - this.wrapper.outerWidth() - this.settings.margin
+            'left': inputOffset.left - wrapperOuterWidth - this.settings.margin
           });
         } else {
           this.wrapper.css({
@@ -248,15 +256,15 @@
           });
         }
       }
-      top = input.offset().top + input.outerHeight() + this.settings.margin;
-      if ($(document).height() > top + this.wrapper.outerHeight()) {
+      top = inputOffset.top + input.outerHeight() + this.settings.margin;
+      if ($(document).height() > top + wrapperOuterHeight) {
         return this.wrapper.css({
           'top': top
         });
       } else {
-        if (input.offset().top > this.wrapper.outerHeight() + this.settings.margin) {
+        if (inputOffset.top > wrapperOuterHeight + this.settings.margin) {
           return this.wrapper.css({
-            'top': input.offset().top - this.wrapper.outerHeight() - this.settings.margin
+            'top': inputOffset.top - wrapperOuterHeight - this.settings.margin
           });
         } else {
           return this.wrapper.css({
@@ -271,7 +279,6 @@
       return this.updateInput($(e.currentTarget));
     };
     LightweightDatepicker.prototype.hide = function(e) {
-      console.log("hiding " + e);
       if (!this.settings.alwaysVisible) {
         this.wrapper.addClass('lw-dp-hidden');
         this.wrapper.css({
@@ -283,7 +290,6 @@
       }
     };
     LightweightDatepicker.prototype.show = function(e) {
-      console.log("showing " + e);
       this.wrapper.removeClass('lw-dp-hidden');
       if (e != null) {
         this.loadData($(e.currentTarget));
@@ -323,7 +329,7 @@
       $el.bind('focus', this.show);
       $el.bind('blur', this.hide);
       $el.bind('change', this.onChange);
-      $el.bind('keyup', this.handleKeyUp);
+      $el.bind('keydown', this.handleKeyDown);
       this.saveData($el);
       this.loadData($el);
       this.updatePosition($el);
@@ -365,8 +371,9 @@
         return $(this.days).find('li.lw-dp-today').click();
       }
     };
-    LightweightDatepicker.prototype.handleKeyUp = function(e) {
+    LightweightDatepicker.prototype.handleKeyDown = function(e) {
       var keyCode;
+      console.log(e);
       keyCode = e.keyCode;
       switch (keyCode) {
         case 33:
@@ -387,7 +394,8 @@
         case 40:
           this.changeDay('next');
       }
-      return this.updateMonth;
+      this.updateMonth;
+      return false;
     };
     return LightweightDatepicker;
   })();

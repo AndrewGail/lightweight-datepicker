@@ -69,19 +69,19 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   z-index: 100;
   overflow: hidden;
   cursor: default;
-  width: 268px;
-  background: #ccddcc;
-  border-width: 2px;
+  width: 155px;
+  background: #ddeeff;
+  border-width: 1px;
   border-style: solid;
-  border-color: #adc9ad;
-  padding: 8px;
+  border-color: #aad4ff;
+  padding: 4px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  -moz-border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -o-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -khtml-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
   -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 2px 8px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 2px 8px;
   -o-box-shadow: rgba(0, 0, 0, 0.3) 0 2px 8px;
@@ -103,16 +103,16 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   position: relative;
   text-align: center;
   overflow: hidden;
-  font-size: 22px;
-  line-height: 34px;
-  color: #525852;
-  padding: 0 0 4px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #5e6e7f;
+  padding: 0 0 2.4px;
 }
 
 /* line 120, ../scss/_lw-datepicker.scss */
 .lw-dp-month {
   display: inline-block;
-  width: 196px;
+  width: 113px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -122,20 +122,20 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .lw-dp-previous, .lw-dp-next {
   position: absolute;
   top: 0;
-  width: 36px;
+  width: 21px;
   height: 100%;
-  color: #8e9b8e;
+  color: #96aec6;
   cursor: pointer;
 }
 
 /* line 137, ../scss/_lw-datepicker.scss */
 .lw-dp-previous:hover, .lw-dp-next:hover {
-  color: #525852;
+  color: #5e6e7f;
 }
 
 /* line 141, ../scss/_lw-datepicker.scss */
 .lw-dp-previous:active, .lw-dp-next:active {
-  color: #7c947c;
+  color: #73a1d0;
 }
 
 /* line 145, ../scss/_lw-datepicker.scss */
@@ -153,130 +153,130 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
   float: left;
   text-align: center;
-  color: #525852;
+  color: #5e6e7f;
 }
 
 /* line 160, ../scss/_lw-datepicker.scss */
 .lw-dp-dows li {
-  font-size: 14px;
-  line-height: 14px;
-  width: 36px;
-  height: 15.4px;
-  background: #ccddcc;
-  border-left-width: 2px;
+  font-size: 8.4px;
+  line-height: 8.4px;
+  width: 21px;
+  height: 9.24px;
+  background: #ddeeff;
+  border-left-width: 1px;
   border-style: solid;
-  border-color: #ccddcc;
+  border-color: #ddeeff;
 }
 
 /* line 171, ../scss/_lw-datepicker.scss */
 .lw-dp-week li {
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  background: #b3c3b3;
-  border-left-width: 2px;
-  border-top-width: 2px;
+  font-size: 12px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  background: #bbd4ee;
+  border-left-width: 1px;
+  border-top-width: 1px;
   border-style: solid;
-  border-color: #ccddcc;
+  border-color: #ddeeff;
   cursor: pointer;
 }
 
 /* line 184, ../scss/_lw-datepicker.scss */
 .lw-dp-dows-last-column, .lw-dp-week-last-column {
-  border-right-width: 2px;
+  border-right-width: 1px;
 }
 
 /* line 188, ../scss/_lw-datepicker.scss */
 .lw-dp-lastweek li {
-  border-bottom-width: 2px;
+  border-bottom-width: 1px;
 }
 
 /* line 192, ../scss/_lw-datepicker.scss */
 .lw-dp-firstweek li:first-child {
-  -moz-border-radius: 8px 0 0 0;
-  -webkit-border-radius: 8px 0 0 0;
-  -o-border-radius: 8px 0 0 0;
-  -ms-border-radius: 8px 0 0 0;
-  -khtml-border-radius: 8px 0 0 0;
-  border-radius: 8px 0 0 0;
+  -moz-border-radius: 4px 0 0 0;
+  -webkit-border-radius: 4px 0 0 0;
+  -o-border-radius: 4px 0 0 0;
+  -ms-border-radius: 4px 0 0 0;
+  -khtml-border-radius: 4px 0 0 0;
+  border-radius: 4px 0 0 0;
 }
 
 /* line 196, ../scss/_lw-datepicker.scss */
 .lw-dp-firstweek li:last-child {
-  -moz-border-radius: 0 8px 0 0;
-  -webkit-border-radius: 0 8px 0 0;
-  -o-border-radius: 0 8px 0 0;
-  -ms-border-radius: 0 8px 0 0;
-  -khtml-border-radius: 0 8px 0 0;
-  border-radius: 0 8px 0 0;
+  -moz-border-radius: 0 4px 0 0;
+  -webkit-border-radius: 0 4px 0 0;
+  -o-border-radius: 0 4px 0 0;
+  -ms-border-radius: 0 4px 0 0;
+  -khtml-border-radius: 0 4px 0 0;
+  border-radius: 0 4px 0 0;
 }
 
 /* line 200, ../scss/_lw-datepicker.scss */
 .lw-dp-lastweek li:first-child {
-  -moz-border-radius: 0 0 0 8px;
-  -webkit-border-radius: 0 0 0 8px;
-  -o-border-radius: 0 0 0 8px;
-  -ms-border-radius: 0 0 0 8px;
-  -khtml-border-radius: 0 0 0 8px;
-  border-radius: 0 0 0 8px;
+  -moz-border-radius: 0 0 0 4px;
+  -webkit-border-radius: 0 0 0 4px;
+  -o-border-radius: 0 0 0 4px;
+  -ms-border-radius: 0 0 0 4px;
+  -khtml-border-radius: 0 0 0 4px;
+  border-radius: 0 0 0 4px;
 }
 
 /* line 204, ../scss/_lw-datepicker.scss */
 .lw-dp-lastweek li:last-child {
-  -moz-border-radius: 0 0 8px 0;
-  -webkit-border-radius: 0 0 8px 0;
-  -o-border-radius: 0 0 8px 0;
-  -ms-border-radius: 0 0 8px 0;
-  -khtml-border-radius: 0 0 8px 0;
-  border-radius: 0 0 8px 0;
+  -moz-border-radius: 0 0 4px 0;
+  -webkit-border-radius: 0 0 4px 0;
+  -o-border-radius: 0 0 4px 0;
+  -ms-border-radius: 0 0 4px 0;
+  -khtml-border-radius: 0 0 4px 0;
+  border-radius: 0 0 4px 0;
 }
 
 /* line 208, ../scss/_lw-datepicker.scss */
 .lw-dp-week li:hover {
-  background: #cad5ca;
+  background: #dce9f6;
 }
 
 /* line 212, ../scss/_lw-datepicker.scss */
 li.lw-dp-weekend {
-  background: #a2b6a2;
+  background: #a3c5e8;
 }
 
 /* line 216, ../scss/_lw-datepicker.scss */
 li.lw-dp-today {
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
 }
 
 /* line 220, ../scss/_lw-datepicker.scss */
 li.lw-dp-today span {
   display: block;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  border: 2px solid #7c947c;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
+  width: 19px;
+  height: 19px;
+  line-height: 19px;
+  border: 1px solid #73a1d0;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
 }
 
 /* line 229, ../scss/_lw-datepicker.scss */
 li.lw-dp-today:hover span {
-  color: #525852;
+  color: #5e6e7f;
 }
 
 /* line 233, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day, li.lw-dp-active-day:hover {
   position: relative;
-  color: #ccddcc;
-  background: #525852;
+  color: #ddeeff;
+  background: #5e6e7f;
 }
 /* line 238, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day:nth-child(n), li.lw-dp-active-day:hover:nth-child(n) {
@@ -290,33 +290,33 @@ li.lw-dp-active-day::before, li.lw-dp-active-day:hover::before {
   bottom: 0;
   right: 0;
   content: '';
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -o-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -khtml-border-radius: 4px;
-  border-radius: 4px;
-  background: #525852;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
+  background: #5e6e7f;
   z-index: -1;
 }
 
 /* line 254, ../scss/_lw-datepicker.scss */
 li.lw-dp-active-day:hover span {
-  background: #b3c3b3;
+  background: #bbd4ee;
 }
 
 /* line 258, ../scss/_lw-datepicker.scss */
 li.lw-dp-neighbour-month-day {
-  color: #8e9b8e;
+  color: #96aec6;
 }
 
 /* line 262, ../scss/_lw-datepicker.scss */
 li.lw-dp-out-of-interval, li.lw-dp-out-of-interval:hover {
-  background: #c1cec1;
+  background: #cfe1f3;
   cursor: default;
 }
 
-/* line 6, ../scss/main.scss */
+/* line 7, ../scss/main.scss */
 body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 14px;
@@ -324,16 +324,14 @@ body {
   position: relative;
 }
 
-/* line 18, ../scss/main.scss */
+/* line 19, ../scss/main.scss */
 input {
-  margin: 1px 30px;
-}
-
-/* line 22, ../scss/main.scss */
-#test-wrapper {
-  position: absolute;
-  left: -30px;
-  top: 200px;
-  width: 600px;
+  margin: 10px 10px;
   border: 1px solid gray;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
 }

@@ -6,6 +6,7 @@ settings =
   onChange: null
   firstDayOfTheWeekIndex: 1
   autoFillToday: false
+  autoHideAfterClick: false
   alwaysVisible: false
   parseDate: null
   formatDate: null
@@ -61,7 +62,6 @@ class LightweightDatepicker
       @selectDay currentLi
       false # Prevent loosing focus from input    
 
-    console.log 'constructor'
     @wrapper.appendTo document.body
 
   # Changes active day
@@ -85,8 +85,11 @@ class LightweightDatepicker
 
     @updateInput()
 
+    if @settings.autoHideAfterClick
+      @currentInput?.blur()
+
     if typeof @settings.onChange is 'function'
-      @settings.onChange @currentInput, @activeDate    
+      @settings.onChange @currentInput, @activeDate  
 
   # Changes value of binded input to active date
   updateInput: ($el = @currentInput) ->
@@ -229,23 +232,27 @@ class LightweightDatepicker
     $ html # Creates jQuery object from html code
 
   updatePosition: (input) ->
+    inputOffset = input.offset()    
+    wrapperOuterWidth = @wrapper.outerWidth()
+    wrapperOuterHeight = @wrapper.outerHeight()
+
     # Horizontal position
-    left = input.offset().left
-    if $('body').width() > left + @wrapper.outerWidth()
+    left = inputOffset.left
+    if $('body').width() > left + wrapperOuterWidth
       @wrapper.css 'left': left
     else
-      if input.offset().left > @wrapper.outerWidth() + @settings.margin
-        @wrapper.css 'left': input.offset().left - @wrapper.outerWidth() - @settings.margin
+      if inputOffset.left > wrapperOuterWidth + @settings.margin
+        @wrapper.css 'left': inputOffset.left - wrapperOuterWidth - @settings.margin
       else
         @wrapper.css 'left': left
 
     # Vertical position
-    top = input.offset().top + input.outerHeight() + @settings.margin
-    if $(document).height() > top + @wrapper.outerHeight()
+    top = inputOffset.top + input.outerHeight() + @settings.margin
+    if $(document).height() > top + wrapperOuterHeight
       @wrapper.css 'top': top
     else
-      if input.offset().top > @wrapper.outerHeight() + @settings.margin
-        @wrapper.css 'top': input.offset().top - @wrapper.outerHeight() - @settings.margin
+      if inputOffset.top > wrapperOuterHeight + @settings.margin
+        @wrapper.css 'top': inputOffset.top - wrapperOuterHeight - @settings.margin
       else
         @wrapper.css 'top': top
 
@@ -256,15 +263,14 @@ class LightweightDatepicker
 
   # Hides day picker
   hide: (e) =>
-    console.log "hiding " + e   
     if !@settings.alwaysVisible
       @wrapper.addClass('lw-dp-hidden')
       @wrapper.css 'top': '-9999px'
-    if e? then @onChange e
+    if e?
+      @onChange e      
 
   # Shows day picker
   show: (e) =>
-    console.log "showing " + e
     @wrapper.removeClass('lw-dp-hidden')
     if e?
       @loadData $ e.currentTarget
@@ -274,7 +280,6 @@ class LightweightDatepicker
   
   loadData: ($el) ->
     data = $el.data 'lw-datepicker'
-    # console.log data
     $.extend @, data
 
   # Validates Date object
@@ -287,13 +292,11 @@ class LightweightDatepicker
   # Saves data to jQuery...
   saveData: ($el) ->
     parsedDate = @parseDate $el.val()
-    # console.log "saving " + parsedDate
     if @isDateValid parsedDate
       @currentDate = new Date parsedDate.getTime()
       @activeDate = new Date parsedDate.getTime()
     else if @settings.autoFillToday
       @activeDate = new Date @todayDate.getTime()
-    # console.log $el
     $el.data 'lw-datepicker',
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()
@@ -301,12 +304,11 @@ class LightweightDatepicker
 
   # Adds current input to list of elements binded to this date picker
   bindTo: (el) =>
-    # console.log "binding " + el.id
     $el = $(el)
     $el.bind 'focus', @show
     $el.bind 'blur', @hide
     $el.bind 'change', @onChange
-    $el.bind 'keyup', @handleKeyUp
+    $el.bind 'keydown', @handleKeyDown
     @saveData $el
     @loadData $el
     @updatePosition $el
@@ -343,7 +345,8 @@ class LightweightDatepicker
       $(@days).find('li.lw-dp-today').click()
 
   # Handles keyboard-navigation
-  handleKeyUp: (e) =>
+  handleKeyDown: (e) =>
+    console.log e
     keyCode = e.keyCode
     switch keyCode
       when 33 # PgUp
@@ -359,6 +362,7 @@ class LightweightDatepicker
       when 40 # Down
         @changeDay 'next'
     @updateMonth
+    return false
 
 # Adds plugin object to jQuery
 $.fn.lwDatepicker = (options) ->
@@ -366,7 +370,6 @@ $.fn.lwDatepicker = (options) ->
   instance = null
 
   return @each ->
-    # console.log "creating " + @.id
     if $(@).is 'input, textarea'
       if options.multiple
         picker = new LightweightDatepicker options
