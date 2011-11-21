@@ -5,9 +5,23 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #111;  
+  position: relative;
 }
 
 .lw-dp {
-  left: 40px;
-  top: 24px;
+//  left: 40px;
+//  top: 24px;
+}
+
+input {
+  margin: 1px 30px
+}
+
+#test-wrapper {
+  position: absolute;
+  left: 300px;
+  top: 200px;
+  width: 600px;
+  height: 700px;
+  border: 1px solid gray;
 }

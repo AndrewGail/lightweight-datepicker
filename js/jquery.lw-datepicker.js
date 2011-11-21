@@ -13,7 +13,9 @@
     startDate: null,
     endDate: null,
     dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    marginLeft: 2,
+    marginTop: 6
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -36,6 +38,7 @@
       this.bindTo = __bind(this.bindTo, this);
       this.show = __bind(this.show, this);
       this.hide = __bind(this.hide, this);
+      this.onChange = __bind(this.onChange, this);
       this.updateMonth = __bind(this.updateMonth, this);      this.settings = settings;
       this.todayDate = new Date;
       this.currentDate = new Date;
@@ -62,8 +65,8 @@
         this.selectDay(currentLi);
         return false;
       }, this));
+      console.log('constructor');
       this.wrapper.appendTo(document.body);
-      this.hide();
     }
     LightweightDatepicker.prototype.selectDay = function(currentLi) {
       var day, diff, month, selectedDate, year;
@@ -107,7 +110,11 @@
       if (typeof this.settings.formatDate === 'function') {
         return this.settings.formatDate(date);
       } else {
-        return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        if (date != null) {
+          return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        } else {
+          return '';
+        }
       }
     };
     LightweightDatepicker.prototype.onNextClick = function() {
@@ -224,22 +231,44 @@
       html += '</ul>';
       return $(html);
     };
+    LightweightDatepicker.prototype.updatePosition = function(input) {
+      var left, top;
+      left = input.offset().left + this.settings.marginLeft;
+      top = input.offset().top + input.outerHeight() + this.settings.marginTop;
+      console.log("left: " + left);
+      console.log("top: " + top);
+      return this.wrapper.css({
+        'left': left,
+        'top': top
+      });
+    };
+    LightweightDatepicker.prototype.onChange = function(e) {
+      this.saveData($(e.currentTarget));
+      this.updateMonth();
+      return this.updateInput($(e.currentTarget));
+    };
     LightweightDatepicker.prototype.hide = function(e) {
+      console.log("hiding " + e);
       if (!this.settings.alwaysVisible) {
         $(this.wrapper).addClass('lw-dp-hidden');
       }
       if (e != null) {
-        return this.saveData($(e.currentTarget));
+        return this.onChange(e);
       }
     };
     LightweightDatepicker.prototype.show = function(e) {
-      var data;
+      console.log("showing " + e);
       $(this.wrapper).removeClass('lw-dp-hidden');
       if (e != null) {
-        data = $(e.currentTarget).data('lw-datepicker');
-        $.extend(this, data);
+        this.loadData($(e.currentTarget));
+        this.updatePosition($(e.currentTarget));
       }
       return this.updateMonth();
+    };
+    LightweightDatepicker.prototype.loadData = function($el) {
+      var data;
+      data = $el.data('lw-datepicker');
+      return $.extend(this, data);
     };
     LightweightDatepicker.prototype.isDateValid = function(date) {
       if (Object.prototype.toString.call(date) !== '[object Date]') {
@@ -267,14 +296,14 @@
       $el = $(el);
       $el.bind('focus', this.show);
       $el.bind('blur', this.hide);
-      $el.bind('change', __bind(function(e) {
-        this.saveData($(e.currentTarget));
-        return this.updateMonth();
-      }, this));
+      $el.bind('change', this.onChange);
       $el.bind('keyup', this.handleKeyUp);
       this.saveData($el);
+      this.loadData($el);
+      this.updatePosition($el);
       this.updateInput($el);
-      return this.updateMonth();
+      this.updateMonth();
+      return this.hide();
     };
     LightweightDatepicker.prototype.changeMonth = function() {
       var activeDate, activeIndex, days;

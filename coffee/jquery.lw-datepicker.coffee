@@ -19,6 +19,8 @@ settings =
   # dowNames: ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
   # monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   #   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+  marginLeft: 2
+  marginTop: 6
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -60,8 +62,8 @@ class LightweightDatepicker
       @selectDay currentLi
       false # Prevent loosing focus from input    
 
+    console.log 'constructor'
     @wrapper.appendTo document.body
-    @hide()
 
   # Changes active day
   selectDay: (currentLi) ->
@@ -103,8 +105,11 @@ class LightweightDatepicker
     if typeof @settings.formatDate is 'function'
       @settings.formatDate date
     else
+      if date?
       # By default in USA format: M/d/yyyy
-      (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear()
+        (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear()
+      else
+        ''
 
   # Show next month
   onNextClick: ->
@@ -224,19 +229,41 @@ class LightweightDatepicker
     html += '</ul>'
     $ html # Creates jQuery object from html code
 
+  updatePosition: (input) ->
+    left = input.offset().left + @settings.marginLeft
+    top = input.offset().top + input.outerHeight() + @settings.marginTop
+    console.log "left: " + left
+    console.log "top: " + top
+    @wrapper.css
+      'left': left
+      'top': top
+
+  onChange: (e)=>
+    @saveData $(e.currentTarget)
+    @updateMonth()
+    @updateInput $(e.currentTarget)
+
   # Hides day picker
   hide: (e) =>
+    console.log "hiding " + e   
     if !@settings.alwaysVisible
       $(@wrapper).addClass('lw-dp-hidden')
-    if e? then @saveData $ e.currentTarget
+    if e? then @onChange e
 
   # Shows day picker
   show: (e) =>
+    console.log "showing " + e
     $(@wrapper).removeClass('lw-dp-hidden')
     if e?
-      data = $(e.currentTarget).data 'lw-datepicker'
-      $.extend @, data
+      @loadData $ e.currentTarget
+      # Datepicker positioning
+      @updatePosition $(e.currentTarget)
     @updateMonth()
+  
+  loadData: ($el) ->
+    data = $el.data 'lw-datepicker'
+    # console.log data
+    $.extend @, data
 
   # Validates Date object
   isDateValid: (date) ->
@@ -248,11 +275,13 @@ class LightweightDatepicker
   # Saves data to jQuery...
   saveData: ($el) ->
     parsedDate = @parseDate $el.val()
+    # console.log "saving " + parsedDate
     if @isDateValid parsedDate
       @currentDate = new Date parsedDate.getTime()
       @activeDate = new Date parsedDate.getTime()
     else if @settings.autoFillToday
       @activeDate = new Date @todayDate.getTime()
+    # console.log $el
     $el.data 'lw-datepicker',
       activeDate: @activeDate
       currentDate: new Date @currentDate.getTime()
@@ -260,16 +289,18 @@ class LightweightDatepicker
 
   # Adds current input to list of elements binded to this date picker
   bindTo: (el) =>
+    # console.log "binding " + el.id
     $el = $(el)
     $el.bind 'focus', @show
     $el.bind 'blur', @hide
-    $el.bind 'change', (e) =>
-      @saveData $(e.currentTarget)
-      @updateMonth()
+    $el.bind 'change', @onChange
     $el.bind 'keyup', @handleKeyUp
     @saveData $el
+    @loadData $el
+    @updatePosition $el
     @updateInput $el
-    @updateMonth() 
+    @updateMonth()
+    @hide()
 
   # Selects same day in changed month
   changeMonth: =>
@@ -323,6 +354,7 @@ $.fn.lwDatepicker = (options) ->
   instance = null
 
   return @each ->
+    # console.log "creating " + @.id
     if $(@).is 'input, textarea'
       if options.multiple
         picker = new LightweightDatepicker options

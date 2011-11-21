@@ -9,21 +9,19 @@
   <script src="js/app.js"></script>
   <script type="text/javascript">
     $(function(){
-      $('#date1').lwDatepicker({
-        autoFillToday: true,
-        alwaysVisible: true,
-        formatDate: function(date) {
-          return date.getFullYear() + '.' + (date.getMonth()+1) + '.' + date.getDate()
-        },
-        parseDate: function(string) {
-          return new Date (Date.parse(string));
-        }
+      $('#date1, #date2, #date3').lwDatepicker({
+        multiple: true,
+        alwaysVisible: true
       });
     });
   </script>
   <title>DatePicker</title>
 </head>
 <body>
-<input type="text" id="date1">
+<div id="test-wrapper">
+  <input type="text" id="date1">
+  <input type="text" id="date2">
+  <input type="text" id="date3">
+</div>
 </body>
 </html>

@@ -321,10 +321,20 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #111;
+  position: relative;
 }
 
-/* line 10, ../scss/main.scss */
-.lw-dp {
-  left: 40px;
-  top: 24px;
+/* line 16, ../scss/main.scss */
+input {
+  margin: 1px 30px;
+}
+
+/* line 20, ../scss/main.scss */
+#test-wrapper {
+  position: absolute;
+  left: 300px;
+  top: 200px;
+  width: 600px;
+  height: 700px;
+  border: 1px solid gray;
 }
