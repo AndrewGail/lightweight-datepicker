@@ -19,8 +19,7 @@ settings =
   # dowNames: ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
   # monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   #   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-  marginLeft: 2
-  marginTop: 6
+  margin: 6
 
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
@@ -230,13 +229,25 @@ class LightweightDatepicker
     $ html # Creates jQuery object from html code
 
   updatePosition: (input) ->
-    left = input.offset().left + @settings.marginLeft
-    top = input.offset().top + input.outerHeight() + @settings.marginTop
-    console.log "left: " + left
-    console.log "top: " + top
-    @wrapper.css
-      'left': left
-      'top': top
+    # Horizontal position
+    left = input.offset().left
+    if $('body').width() > left + @wrapper.outerWidth()
+      @wrapper.css 'left': left
+    else
+      if input.offset().left > @wrapper.outerWidth() + @settings.margin
+        @wrapper.css 'left': input.offset().left - @wrapper.outerWidth() - @settings.margin
+      else
+        @wrapper.css 'left': left
+
+    # Vertical position
+    top = input.offset().top + input.outerHeight() + @settings.margin
+    if $(document).height() > top + @wrapper.outerHeight()
+      @wrapper.css 'top': top
+    else
+      if input.offset().top > @wrapper.outerHeight() + @settings.margin
+        @wrapper.css 'top': input.offset().top - @wrapper.outerHeight() - @settings.margin
+      else
+        @wrapper.css 'top': top
 
   onChange: (e)=>
     @saveData $(e.currentTarget)
@@ -247,13 +258,14 @@ class LightweightDatepicker
   hide: (e) =>
     console.log "hiding " + e   
     if !@settings.alwaysVisible
-      $(@wrapper).addClass('lw-dp-hidden')
+      @wrapper.addClass('lw-dp-hidden')
+      @wrapper.css 'top': '-9999px'
     if e? then @onChange e
 
   # Shows day picker
   show: (e) =>
     console.log "showing " + e
-    $(@wrapper).removeClass('lw-dp-hidden')
+    @wrapper.removeClass('lw-dp-hidden')
     if e?
       @loadData $ e.currentTarget
       # Datepicker positioning

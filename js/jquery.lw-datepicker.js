@@ -14,8 +14,7 @@
     endDate: null,
     dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    marginLeft: 2,
-    marginTop: 6
+    margin: 6
   };
   checkEqualDates = function(date1, date2) {
     if (date1.getFullYear() !== date2.getFullYear()) {
@@ -233,14 +232,38 @@
     };
     LightweightDatepicker.prototype.updatePosition = function(input) {
       var left, top;
-      left = input.offset().left + this.settings.marginLeft;
-      top = input.offset().top + input.outerHeight() + this.settings.marginTop;
-      console.log("left: " + left);
-      console.log("top: " + top);
-      return this.wrapper.css({
-        'left': left,
-        'top': top
-      });
+      left = input.offset().left;
+      if ($('body').width() > left + this.wrapper.outerWidth()) {
+        this.wrapper.css({
+          'left': left
+        });
+      } else {
+        if (input.offset().left > this.wrapper.outerWidth() + this.settings.margin) {
+          this.wrapper.css({
+            'left': input.offset().left - this.wrapper.outerWidth() - this.settings.margin
+          });
+        } else {
+          this.wrapper.css({
+            'left': left
+          });
+        }
+      }
+      top = input.offset().top + input.outerHeight() + this.settings.margin;
+      if ($(document).height() > top + this.wrapper.outerHeight()) {
+        return this.wrapper.css({
+          'top': top
+        });
+      } else {
+        if (input.offset().top > this.wrapper.outerHeight() + this.settings.margin) {
+          return this.wrapper.css({
+            'top': input.offset().top - this.wrapper.outerHeight() - this.settings.margin
+          });
+        } else {
+          return this.wrapper.css({
+            'top': top
+          });
+        }
+      }
     };
     LightweightDatepicker.prototype.onChange = function(e) {
       this.saveData($(e.currentTarget));
@@ -250,7 +273,10 @@
     LightweightDatepicker.prototype.hide = function(e) {
       console.log("hiding " + e);
       if (!this.settings.alwaysVisible) {
-        $(this.wrapper).addClass('lw-dp-hidden');
+        this.wrapper.addClass('lw-dp-hidden');
+        this.wrapper.css({
+          'top': '-9999px'
+        });
       }
       if (e != null) {
         return this.onChange(e);
@@ -258,7 +284,7 @@
     };
     LightweightDatepicker.prototype.show = function(e) {
       console.log("showing " + e);
-      $(this.wrapper).removeClass('lw-dp-hidden');
+      this.wrapper.removeClass('lw-dp-hidden');
       if (e != null) {
         this.loadData($(e.currentTarget));
         this.updatePosition($(e.currentTarget));
