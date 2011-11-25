@@ -108,7 +108,6 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 }
 
 .lw-dp-toolbar {
-  position: relative;
   text-align: center;
   overflow: hidden;
   font-size: floor($lw-dp-base-font-size * 1.1);
@@ -127,9 +126,9 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 
 .lw-dp-previous, .lw-dp-next {
   position: absolute;
-  top: 0;
+  top: $lw-dp-padding;
   width: $lw-dp-cell-width;
-  height: 100%;
+  height: floor($lw-dp-base-font-size * 1.7);
   color: $lw-dp-font-color-neighbour;
   cursor: pointer;
 }
@@ -143,11 +142,11 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 }
 
 .lw-dp-previous {
-  left: 0;
+  left: $lw-dp-padding;
 }
 
 .lw-dp-next {
-  right: 0;
+  right: $lw-dp-padding;
 }
 
 .lw-dp-dows li, .lw-dp-week li {

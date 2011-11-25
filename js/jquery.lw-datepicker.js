@@ -31,6 +31,7 @@
     LightweightDatepicker.prototype.activeDate = null;
     LightweightDatepicker.prototype.canSelectPreviousMonth = true;
     LightweightDatepicker.prototype.canSelectNextMonth = true;
+    LightweightDatepicker.prototype.shouldHide = true;
     function LightweightDatepicker(settings) {
       this.handleKeyDown = __bind(this.handleKeyDown, this);
       this.changeDay = __bind(this.changeDay, this);
@@ -39,7 +40,12 @@
       this.show = __bind(this.show, this);
       this.hide = __bind(this.hide, this);
       this.onChange = __bind(this.onChange, this);
-      this.updateMonth = __bind(this.updateMonth, this);      this.settings = settings;
+      this.updateMonth = __bind(this.updateMonth, this);
+      this.onPreviousClick = __bind(this.onPreviousClick, this);
+      this.onNextClick = __bind(this.onNextClick, this);
+      var event;
+      this.settings = settings;
+      this.isIE = $.browser.msie && parseInt($.browser.version) <= 8;
       this.todayDate = new Date;
       this.currentDate = new Date;
       this.wrapper = $('<div class="lw-dp"/>');
@@ -49,26 +55,29 @@
       this.month = $('<div class="lw-dp-month"/>').appendTo(this.toolbar);
       this.renderDows().appendTo(this.wrapper);
       this.days = $('<div />').appendTo(this.wrapper);
-      this.next.bind('click', __bind(function() {
-        return this.onNextClick();
-      }, this));
-      this.previous.bind('click', __bind(function() {
-        return this.onPreviousClick();
-      }, this));
       this.updateMonth();
-      this.wrapper.bind('mousedown', function() {
-        return false;
-      });
-      $(this.days).delegate('li:not(.lw-dp-active-day)', 'click', __bind(function(e) {
+      this.wrapper.bind('mousedown', __bind(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.isIE) {
+          return this.shouldHide = false;
+        }
+      }, this));
+      event = this.isIE ? 'mousedown' : 'click';
+      this.wrapper.delegate('.lw-dp-next', event, this.onNextClick);
+      this.wrapper.delegate('.lw-dp-previous', event, this.onPreviousClick);
+      $(this.days).delegate('li:not(.lw-dp-active-day)', event, __bind(function(e) {
         var currentLi;
         currentLi = $(e.currentTarget);
-        this.selectDay(currentLi);
-        return false;
+        return this.selectDay(currentLi);
       }, this));
       this.wrapper.appendTo(document.body);
     }
-    LightweightDatepicker.prototype.selectDay = function(currentLi) {
+    LightweightDatepicker.prototype.selectDay = function(currentLi, fromEvent) {
       var day, diff, month, selectedDate, year, _ref;
+      if (fromEvent == null) {
+        fromEvent = true;
+      }
       year = this.currentDate.getFullYear();
       month = this.currentDate.getMonth();
       day = parseInt(currentLi.text());
@@ -88,7 +97,7 @@
         }
       }
       this.updateInput();
-      if (this.settings.autoHideAfterClick) {
+      if (this.settings.autoHideAfterClick && fromEvent) {
         if ((_ref = this.currentInput) != null) {
           _ref.blur();
         }
@@ -279,12 +288,19 @@
       return this.updateInput($(e.currentTarget));
     };
     LightweightDatepicker.prototype.hide = function(e) {
-      if (!this.settings.alwaysVisible) {
+      var _ref;
+      if (!this.settings.alwaysVisible && this.shouldHide) {
         this.wrapper.addClass('lw-dp-hidden');
         this.wrapper.css({
           'top': '-9999px'
         });
       }
+      if (!this.shouldHide) {
+        if ((_ref = this.currentInput) != null) {
+          _ref.focus();
+        }
+      }
+      this.shouldHide = true;
       if (e != null) {
         return this.onChange(e);
       }
@@ -312,7 +328,6 @@
       var parsedDate;
       parsedDate = this.parseDate($el.val());
       if (this.isDateValid(parsedDate)) {
-        this.currentDate = new Date(parsedDate.getTime());
         this.activeDate = new Date(parsedDate.getTime());
       } else if (this.settings.autoFillToday) {
         this.activeDate = new Date(this.todayDate.getTime());
@@ -346,13 +361,13 @@
         activeDate.setFullYear(this.currentDate.getFullYear());
         days = $(this.days).find('li:not(.lw-dp-neighbour-month-day)');
         if (days.length <= activeIndex) {
-          return days.last().click();
+          return this.selectDay(days.last(), false);
         } else if ((this.settings.endDate != null) && activeDate.getTime() > this.settings.endDate.getTime()) {
-          return days.eq(this.settings.endDate.getDate() - 2).click();
+          return this.selectDay(days.eq(this.settings.endDate.getDate() - 2), false);
         } else if ((this.settings.startDate != null) && activeDate.getTime() < this.settings.startDate.getTime()) {
-          return days.eq(this.settings.startDate.getDate()).click();
+          return this.selectDay(days.eq(this.settings.startDate.getDate()), false);
         } else {
-          return days.eq(activeIndex).click();
+          return this.selectDay(days.eq(activeIndex), false);
         }
       }
     };
@@ -362,19 +377,18 @@
       if (this.activeDate != null) {
         $current = $(this.days).find('li.lw-dp-active-day');
         $el = $current[action]();
-        if ($el.length) {
-          return $el.click();
-        } else {
-          return $current.parent()[action]().children()[direction]().click();
+        if (!$el.length) {
+          $el = $current.parent()[action]().children()[direction]();
         }
       } else {
-        return $(this.days).find('li.lw-dp-today').click();
+        $el = $(this.days).find('li.lw-dp-today');
       }
+      return this.selectDay($el, false);
     };
     LightweightDatepicker.prototype.handleKeyDown = function(e) {
-      var keyCode;
-      console.log(e);
+      var handled, keyCode;
       keyCode = e.keyCode;
+      handled = true;
       switch (keyCode) {
         case 33:
           if (this.canSelectPreviousMonth) {
@@ -393,9 +407,14 @@
           break;
         case 40:
           this.changeDay('next');
+          break;
+        default:
+          handled = false;
       }
       this.updateMonth;
-      return false;
+      if (handled) {
+        return false;
+      }
     };
     return LightweightDatepicker;
   })();
