@@ -15,7 +15,8 @@ settings =
   firstDayOfTheWeekIndex: 1
   # Sets whether auto fill empty input with today value
   autoFillToday: false
-  # Allows to use one datepicker for multiple inputs
+  # If 'false', creates one datepicker for all inputs
+  # If 'true', creates dedicated datepicker for each input
   multiple: false
   # Sets whether datepicker hides after input field loses focus
   alwaysVisible: false
