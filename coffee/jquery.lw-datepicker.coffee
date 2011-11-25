@@ -2,37 +2,50 @@
 $ = jQuery
 
 settings = 
-  multiple: false
-  onChange: null
-  firstDayOfTheWeekIndex: 1
-  autoFillToday: false
-  autoHideAfterClick: false
-  alwaysVisible: false
-  parseDate: null
-  formatDate: null
+  # Sets start date
   startDate: null
+  # Sets end date
   endDate: null
-  # startDate: new Date 2011, 9, 15
-  # endDate: new Date 2012, 1, 15
+  # Sets names for days of the week
   dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
+  # Sets names for days of the week
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December']
-  # dowNames: ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-  # monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  #   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+  # Sets first day of the week (starting with Sunday, 0-based index)
+  firstDayOfTheWeekIndex: 1
+  # Sets whether auto fill empty input with today value
+  autoFillToday: false
+  # Allows to use one datepicker for multiple inputs
+  multiple: false
+  # Sets whether datepicker hides after input field loses focus
+  alwaysVisible: false
+  # Sets whether datepicker hides after day selection with a mouse
+  autoHideAfterClick: false
+  # Holds optional function for typed date parsing
+  parseDate: null
+  # Holds optional function for selected date formatting
+  formatDate: null
+  # Holds optional function called after active date changed
+  onChange: null
+  # Needed for styling purposes.
+  # Should be moved to css.
   margin: 6
 
+# Checks whether two dates are equal to each other
 checkEqualDates = (date1, date2) ->
   return false if date1.getFullYear() isnt date2.getFullYear()
   return false if date1.getMonth() isnt date2.getMonth() 
   date1.getDate() is date2.getDate()
 
+# Class constructor
 class LightweightDatepicker
 
   currentInput: null
   activeDate: null
   canSelectPreviousMonth: true
   canSelectNextMonth: true
+
+  # Needed for handle IE6-8 bug with input field focus lose
   shouldHide: true
 
   constructor: (settings) ->
@@ -66,11 +79,6 @@ class LightweightDatepicker
     $(@days).delegate 'li:not(.lw-dp-active-day)', event, (e) =>
       currentLi = $(e.currentTarget)
       @selectDay currentLi
-      # if @isIE
-      #   setTimeout =>
-      #     @currentInput?.focus()
-      # e.preventDefault()
-      # e.stopPropagation()
 
     @wrapper.appendTo document.body
 
@@ -81,6 +89,10 @@ class LightweightDatepicker
     day = parseInt currentLi.text()
     diff = 0
 
+    # When user clicks on a day of a neighbour month we need do calculate
+    # if it is a previous or a next month. Since we show maximum of 6 days
+    # of a neighbour month we can be reasonably sure that if the day inside
+    # that cell is less then 10 than its a next month.
     if currentLi.hasClass('lw-dp-neighbour-month-day')
       diff = if day > 10 then -1 else 1
 
@@ -112,7 +124,7 @@ class LightweightDatepicker
     else
       new Date (Date.parse string)
 
-  # Format date as text
+  # Formats date as text
   formatDate: (date) ->
     if typeof @settings.formatDate is 'function'
       @settings.formatDate date
@@ -123,25 +135,25 @@ class LightweightDatepicker
       else
         ''
 
-  # Show next month
+  # Shows next month
   onNextClick: =>
     @updateMonth 1
 
-  # Show previous month
+  # Shows previous month
   onPreviousClick: =>
     @updateMonth -1
 
-  # Render month
+  # Renders month
   updateMonth: (diff = 0) =>
     @currentDate.setMonth @currentDate.getMonth() + diff
     
-    # Updating month name and year
+    # Updates month name and year
     @month.html @settings.monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
 
-    # Updating dates
+    # Updates dates
     cd = @currentDate
 
-    # Enabling or disabling selectors of previous and next months
+    # Enables or disables selectors of previous and next months
     lastDayOfPreviousMonth = new Date cd.getFullYear(), cd.getMonth(), 0
     if @settings.startDate? and lastDayOfPreviousMonth.getTime() < @settings.startDate.getTime()
       @canSelectPreviousMonth = false
@@ -170,6 +182,7 @@ class LightweightDatepicker
     daysInMonth = (new Date cd.getFullYear(), cd.getMonth() + 1, 0).getDate()
     weeks = Math.ceil (daysInMonth + 7 - daysInFirstWeek) / 7.0
 
+    # Renders day with all necessary classes
     renderDay = (day) =>
       classes = []
       classAttribute = ''
@@ -215,9 +228,9 @@ class LightweightDatepicker
     html = ''
 
     for week in [1..weeks]
-      if week is 1
+      if week is 1 # First week
         html += '<ul class="lw-dp-week lw-dp-firstweek">'
-      else if week is weeks
+      else if week is weeks # Last week
         html += '<ul class="lw-dp-week lw-dp-lastweek">'
       else # Common week
         html += '<ul class="lw-dp-week">'
@@ -241,6 +254,7 @@ class LightweightDatepicker
     html += '</ul>'
     $ html # Creates jQuery object from html code
 
+  # Calculates and sets position of datepicker
   updatePosition: (input) ->
     inputOffset = input.offset()    
     wrapperOuterWidth = @wrapper.outerWidth()
@@ -266,6 +280,7 @@ class LightweightDatepicker
       else
         @wrapper.css 'top': top
 
+  # Called after active date changes
   onChange: (e)=>
     @saveData $(e.currentTarget)
     @updateMonth()
@@ -287,10 +302,10 @@ class LightweightDatepicker
     @wrapper.removeClass('lw-dp-hidden')
     if e?
       @loadData $ e.currentTarget
-      # Datepicker positioning
       @updatePosition $(e.currentTarget)
     @updateMonth()
   
+  # Loads data associated with provided node
   loadData: ($el) ->
     data = $el.data 'lw-datepicker'
     $.extend @, data
@@ -302,7 +317,7 @@ class LightweightDatepicker
     # Add check for interval
     return !isNaN(date.getTime())    
 
-  # Saves data to jQuery...
+  # Saves data
   saveData: ($el) ->
     parsedDate = @parseDate $el.val()
     if @isDateValid parsedDate

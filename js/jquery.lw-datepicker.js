@@ -3,18 +3,18 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $ = jQuery;
   settings = {
-    multiple: false,
-    onChange: null,
-    firstDayOfTheWeekIndex: 1,
-    autoFillToday: false,
-    autoHideAfterClick: false,
-    alwaysVisible: false,
-    parseDate: null,
-    formatDate: null,
     startDate: null,
     endDate: null,
     dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    firstDayOfTheWeekIndex: 1,
+    autoFillToday: false,
+    multiple: false,
+    alwaysVisible: false,
+    autoHideAfterClick: false,
+    parseDate: null,
+    formatDate: null,
+    onChange: null,
     margin: 6
   };
   checkEqualDates = function(date1, date2) {
