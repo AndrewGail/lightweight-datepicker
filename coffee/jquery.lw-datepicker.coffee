@@ -322,7 +322,8 @@ class LightweightDatepicker
   saveData: ($el) ->
     parsedDate = @parseDate $el.val()
     if @isDateValid parsedDate
-      # @currentDate = new Date parsedDate.getTime()
+      # TODO There was a bug here.
+      @currentDate = new Date parsedDate.getTime()
       @activeDate = new Date parsedDate.getTime()
     else if @settings.autoFillToday
       @activeDate = new Date @todayDate.getTime()
@@ -379,6 +380,9 @@ class LightweightDatepicker
     keyCode = e.keyCode
     handled = true
     switch keyCode
+      when 27 # Esc
+        @hide()
+        @currentInput.blur()
       when 33 # PgUp
         if @canSelectPreviousMonth
           @onPreviousClick()
@@ -394,7 +398,7 @@ class LightweightDatepicker
       else
         handled = false
     @updateMonth
-    if handled then return false
+    return not handled
 
 # Adds plugin object to jQuery
 $.fn.lwDatepicker = (options) ->
@@ -402,7 +406,10 @@ $.fn.lwDatepicker = (options) ->
   instance = null
 
   return @each ->
-    if $(@).is 'input, textarea'
+    $el = $(@)
+    # Prevents binding to inappropriate elments
+    # and binding more than one datepicker to one element.
+    if ($el.is 'input, textarea') and not $el.data 'lw-datepicker'
       if options.multiple
         picker = new LightweightDatepicker options
         picker.bindTo @
