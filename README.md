@@ -50,7 +50,7 @@ Requires [jQuery v1.6+](http://jquery.com/)
 
 ## License
 
-Copyright (c) 2011 [Maxim Zhukov](zhkv.mxm@gmail.com)
+Copyright (c) 2011 [Maxim Zhukov](mailto:zhkv.mxm@gmail.com)
 
 Dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
