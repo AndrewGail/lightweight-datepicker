@@ -2,7 +2,7 @@
  * Lightweight DatePicker - jQuery Plugin
  * Provides themeable and customizable date picker
  *
- * Copyright (c) 2011 Maxim Zhukov (zhkv.mxm@gmail.com)
+ * © 2011 Maxim Zhukov (zhkv.mxm@gmail.com)
  * 
  * Version: 1.0 (12/12/2011)
  * Requires: jQuery v1.6+
@@ -36,14 +36,14 @@ settings =
   alwaysVisible: false
   # Sets whether datepicker hides after day selection with a mouse
   autoHideAfterClick: false
-  # Holds optional function for typed date parsing
+  # Holds optional user function for parsing typed date
   parseDate: null
-  # Holds optional function for selected date formatting
+  # Holds optional user function for formatting selected date
   formatDate: null
-  # Holds optional function called after active date changed
+  # Holds optional user function called after active date changed
   onChange: null
-  # Needed for styling purposes.
-  # Should be moved to css.
+  # Defines mininum distance between the datepicker and browser window border
+  # TODO Should be moved to css.
   margin: 6
 
 # Checks whether two dates are equal to each other
