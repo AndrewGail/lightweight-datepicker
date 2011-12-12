@@ -1,4 +1,4 @@
-###
+###!
  * Lightweight DatePicker - jQuery Plugin
  * Provides themeable and customizable date picker
  *
@@ -411,7 +411,8 @@ class LightweightDatepicker
         @changeDay 'next'
       else
         handled = false
-    @updateMonth
+    # There should be mistake in next line
+    # @updateMonth()
     return not handled
 
 # Adds plugin object to jQuery

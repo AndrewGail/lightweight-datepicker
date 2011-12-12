@@ -1,4 +1,4 @@
-/*
+/*!
  * Lightweight DatePicker - jQuery Plugin
  * Provides themeable and customizable date picker
  *
@@ -428,7 +428,6 @@ LightweightDatepicker = (function() {
       default:
         handled = false;
     }
-    this.updateMonth;
     return !handled;
   };
   return LightweightDatepicker;
