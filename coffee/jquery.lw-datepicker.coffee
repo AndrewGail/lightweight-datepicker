@@ -1,3 +1,17 @@
+###
+ * Lightweight DatePicker - jQuery Plugin
+ * Provides themeable and customizable date picker
+ *
+ * Copyright (c) 2011 Maxim Zhukov (zhkv.mxm@gmail.com)
+ * 
+ * Version: 1.0 (12/12/2011)
+ * Requires: jQuery v1.6+
+ *
+ * Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
+ ###
+
 # References jQuery
 $ = jQuery
 
@@ -8,17 +22,17 @@ settings =
   endDate: null
   # Sets names for days of the week
   dowNames: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
-  # Sets names for days of the week
+  # Sets names of months
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December']
-  # Sets first day of the week (starting with Sunday, 0-based index)
+  # Sets first day of the week starting with Sunday (in 0-based index)
   firstDayOfTheWeekIndex: 1
   # Sets whether auto fill empty input with today value
   autoFillToday: false
   # If 'false', creates one datepicker for all inputs
   # If 'true', creates dedicated datepicker for each input
   multiple: false
-  # Sets whether datepicker hides after input field loses focus
+  # Sets whether datepicker stay visible after input field loses focus
   alwaysVisible: false
   # Sets whether datepicker hides after day selection with a mouse
   autoHideAfterClick: false
