@@ -337,7 +337,7 @@ class LightweightDatepicker
     parsedDate = @parseDate $el.val()
     if @isDateValid parsedDate
       # TODO There was a bug here.
-      @currentDate = new Date parsedDate.getTime()
+      # @currentDate = new Date parsedDate.getTime()
       @activeDate = new Date parsedDate.getTime()
     else if @settings.autoFillToday
       @activeDate = new Date @todayDate.getTime()

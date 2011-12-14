@@ -340,7 +340,6 @@ LightweightDatepicker = (function() {
     var parsedDate;
     parsedDate = this.parseDate($el.val());
     if (this.isDateValid(parsedDate)) {
-      this.currentDate = new Date(parsedDate.getTime());
       this.activeDate = new Date(parsedDate.getTime());
     } else if (this.settings.autoFillToday) {
       this.activeDate = new Date(this.todayDate.getTime());

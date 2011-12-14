@@ -149,9 +149,17 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   right: $lw-dp-padding;
 }
 
-.lw-dp-dows li, .lw-dp-week li {
+.lw-dp-dows {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.lw-dp-dows li, .lw-dp-week li {  
   display: block;
   float: left;
+  padding: 0;
+  margin: 0;
   text-align: center;
   color: $lw-dp-font-color;
 }
@@ -162,12 +170,24 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   width: $lw-dp-cell-width;
   height: $lw-dp-dow-font-size * 1.1;
   background: $lw-dp-base-color;
+  border-width: 0;
   border-left-width: $lw-dp-cell-border-width;
   border-style: $lw-dp-cell-border-style;
   border-color: $lw-dp-base-color;
+  padding: 0;
+  margin: 0;
+}
+
+.lw-dp-week {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .lw-dp-week li {
+  padding: 0;
+  margin: 0;
+  border-width: 0;
   font-size: $lw-dp-base-font-size;
   width: $lw-dp-cell-width;
   height: $lw-dp-cell-height;
@@ -185,6 +205,9 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 }
 
 .lw-dp-lastweek li {
+    padding: 0;
+  margin: 0;
+
   border-bottom-width: $lw-dp-cell-border-width;
 }
 
