@@ -8,9 +8,15 @@
   <script src="js/jquery.lw-datepicker.js"></script>
   <script type="text/javascript">
     $(function(){
-      $('#date1, #date2, #date3').lwDatepicker({
+      $('#date1').lwDatepicker({
         autoHideAfterClick: false,
-        autoFillToday: true
+        autoFillToday: true,
+        alwaysVisible: false
+      });
+      $('#date2, #date3').lwDatepicker({
+        autoHideAfterClick: false,
+        autoFillToday: true,
+        alwaysVisible: false
       });
     });
   </script>

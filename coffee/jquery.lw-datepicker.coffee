@@ -83,40 +83,40 @@ class LightweightDatepicker
     # Saves binded input
     @input = el
 
-    # Saves settings
-    @settings = settings
+    # Input events
+    @input.bind 'focus', @show
+    @input.bind 'blur', @hide
+    @input.bind 'keydown', @handleKeyDown
+    @input.bind 'change', @onChange
 
-    # Determines if it's old Internet Explorer
+    # Determines if it's Internet Explorer 7 or older
     @isIE = $.browser.msie and parseInt($.browser.version) <= 8
 
+    # Necessary for prevent binding two or more datepickers to one input
+    @input.data LW_DP_DATA_KEY, true
+
+    # Saves settings
+    # Manually assigning values for better file size optimization
+    @settings =
+      startDate: settings['startDate']
+      endDate: settings['endDate']
+      dowNames: settings['dowNames']
+      monthNames: settings['monthNames']
+      firstDayOfTheWeekIndex: settings['firstDayOfTheWeekIndex']
+      autoFillToday: settings['autoFillToday']
+      alwaysVisible: settings['alwaysVisible']
+      autoHideAfterClick: settings['autoHideAfterClick']
+      parseDate: settings['parseDate']
+      formatDate: settings['formatDate']
+      onChange: settings['onChange']
+
+    @activeDate = new Date
     @todayDate = new Date
     @currentDate = new Date
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
 
-    @wrapper = $ "<div class=#{LW_DP_CLASS}/>"
-    @toolbar = $("<div class=#{LW_DP_TOOLBAR_CLASS}/>").appendTo @wrapper
-    @previous = $("<div class=#{LW_DP_PREVIOUS_CLASS}>◄</div>").appendTo @toolbar
-    @next = $("<div class=#{LW_DP_NEXT_CLASS}>►</div>").appendTo @toolbar
-    @month = $("<div class=#{LW_DP_MONTH_CLASS}/>").appendTo @toolbar
-    @renderDows().appendTo @wrapper
-    @days = $('<div/>').appendTo @wrapper
-
-    @updateMonth()
-
-    @wrapper.bind 'mousedown', (e) =>
-      e.preventDefault()
-      e.stopPropagation()
-      if @isIE then @shouldHide = false
-
-    # Events binding
-    event = if @isIE then 'mousedown' else 'click'
-    @wrapper.delegate ".#{LW_DP_NEXT_CLASS}", event, @onNextClick
-    @wrapper.delegate ".#{LW_DP_PREVIOUS_CLASS}", event, @onPreviousClick
-    $(@days).delegate "li:not(.#{LW_DP_ACTIVE_DAY_CLASS})", event, (e) =>
-      currentLi = $(e.currentTarget)
-      @selectDay currentLi
-
+    @createDatepicker()
     @wrapper.appendTo document.body
 
     # We will manage margin programmatically for correct datepicker placement
@@ -125,80 +125,53 @@ class LightweightDatepicker
 
     @bindEvents()
 
-  # Changes active day
-  selectDay: (currentLi, fromEvent = true) ->
-    year = @currentDate.getFullYear()
-    month = @currentDate.getMonth()
-    day = parseInt currentLi.text()
-    diff = 0
-
-    # When user clicks on a day of a neighbour month we need do calculate
-    # if it is a previous or a next month. Since we show maximum of 6 days
-    # of a neighbour month we can be reasonably sure that if the day inside
-    # that cell is less then 10 than its a next month.
-    if currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
-      diff = if day > 10 then -1 else 1
-
-    selectedDate = new Date year, month + diff, day
-      
-    if not @settings['startDate']? or selectedDate.getTime() >= @settings['startDate'].getTime()
-      if not @settings['endDate']? or selectedDate.getTime() <= @settings['endDate'].getTime()
-        currentLi.parent().parent().find('li').removeClass LW_DP_ACTIVE_DAY_CLASS
-        currentLi.addClass LW_DP_ACTIVE_DAY_CLASS
-        @activeDate = selectedDate
-        if diff isnt 0 then @updateMonth diff  
-
+    if @settings.alwaysVisible then @updatePosition()
     @updateInput()
+    @updateMonth()
+    @hide()
 
-    if @settings['autoHideAfterClick'] and fromEvent
-      @input?.blur()
+  # Creates necessary markup
+  createDatepicker: ->
+    @wrapper = $ "<div class=#{LW_DP_CLASS}/>"
+    @toolbar = $("<div class=#{LW_DP_TOOLBAR_CLASS}/>").appendTo @wrapper
+    @previous = $("<div class=#{LW_DP_PREVIOUS_CLASS}>◄</div>").appendTo @toolbar
+    @next = $("<div class=#{LW_DP_NEXT_CLASS}>►</div>").appendTo @toolbar
+    @month = $("<div class=#{LW_DP_MONTH_CLASS}/>").appendTo @toolbar
+    @renderDows().appendTo @wrapper
+    @days = $('<div/>').appendTo @wrapper
 
-    if typeof @settings['onChange'] is 'function'
-      @settings['onChange'] @input, @activeDate  
+  # Binds events
+  bindEvents: ->
+    @wrapper.bind 'mousedown', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      if @isIE then @shouldHide = false
+
+    # Datepicker events
+    event = if @isIE then 'mousedown' else 'click'
+    @wrapper.delegate ".#{LW_DP_NEXT_CLASS}", event, @onNextClick
+    @wrapper.delegate ".#{LW_DP_PREVIOUS_CLASS}", event, @onPreviousClick
+    $(@days).delegate "li:not(.#{LW_DP_ACTIVE_DAY_CLASS})", event, (e) =>
+      currentLi = $(e.currentTarget)
+      @selectDay currentLi
 
   # Changes value of binded input to active date
-  updateInput: ($el = @input) ->
-    $el?.val @formatDate @activeDate
-  
-  # Parses string to Date object
-  parseDate: (string) ->
-    if typeof @settings['parseDate'] is 'function'
-      @settings['parseDate'] string
-    else
-      new Date (Date.parse string)
-
-  # Formats date as text
-  formatDate: (date) ->
-    if typeof @settings['formatDate'] is 'function'
-      @settings['formatDate'] date
-    else
-      if date?
-      # By default in USA format: M/d/yyyy
-        (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear()
-      else
-        ''
-
-  # Shows next month
-  onNextClick: =>
-    @updateMonth 1
-
-  # Shows previous month
-  onPreviousClick: =>
-    @updateMonth -1
+  updateInput: ->
+    @input.val @formatDate @activeDate
 
   # Renders month
   updateMonth: (diff = 0) =>
     @currentDate.setMonth @currentDate.getMonth() + diff
     
     # Updates month name and year
-    @month.html @settings['monthNames'][@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
+    @month.html @settings.monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
 
     # Updates dates
     cd = @currentDate
 
     # Enables or disables selectors of previous and next months
     lastDayOfPreviousMonth = new Date cd.getFullYear(), cd.getMonth(), 0
-    if @settings['startDate']? and lastDayOfPreviousMonth.getTime() < @settings['startDate'].getTime()
+    if @settings.startDate? and lastDayOfPreviousMonth.getTime() < @settings.startDate.getTime()
       @canSelectPreviousMonth = false
       $(@previous).hide()
     else
@@ -206,7 +179,7 @@ class LightweightDatepicker
       $(@previous).show()
     
     firstDayOfNextMonth = new Date cd.getFullYear(), cd.getMonth()+1, 1
-    if @settings['endDate']? and firstDayOfNextMonth.getTime() > @settings['endDate'].getTime()
+    if @settings.endDate? and firstDayOfNextMonth.getTime() > @settings.endDate.getTime()
       @canSelectNextMonth = false
       $(@next).hide()
     else
@@ -214,9 +187,9 @@ class LightweightDatepicker
       $(@next).show()
 
     firstDayDow = (new Date cd.getFullYear(), cd.getMonth(), 1).getDay()
-    lastDowIndex = (@settings['firstDayOfTheWeekIndex'] + 6) % 7
+    lastDowIndex = (@settings.firstDayOfTheWeekIndex + 6) % 7
     
-    daysInFirstWeek = (7 - firstDayDow + @settings['firstDayOfTheWeekIndex']) % 7
+    daysInFirstWeek = (7 - firstDayDow + @settings.firstDayOfTheWeekIndex) % 7
     if daysInFirstWeek is 0 then daysInFirstWeek = 7
     
     daysInPreviousMonth = lastDayOfPreviousMonth.getDate()
@@ -254,10 +227,10 @@ class LightweightDatepicker
         classes.push LW_DP_ACTIVE_DAY_CLASS
 
       # Handles date interval borders
-      if @settings['startDate'] and day.getTime() <= @settings['startDate'].getTime()
+      if @settings.startDate and day.getTime() <= @settings.startDate.getTime()
         classes.push LW_DP_OUT_OF_INTERVAL_CLASS
         liContent = ''
-      if @settings['endDate'] and day.getTime() >= @settings['endDate'].getTime()
+      if @settings.endDate and day.getTime() >= @settings.endDate.getTime()
         classes.push LW_DP_OUT_OF_INTERVAL_CLASS
         liContent = ''
 
@@ -283,13 +256,71 @@ class LightweightDatepicker
 
     @days.html html
 
+  # Changes active day
+  selectDay: (currentLi, fromEvent = true) ->
+    year = @currentDate.getFullYear()
+    month = @currentDate.getMonth()
+    day = parseInt currentLi.text()
+    diff = 0
+
+    # When user clicks on a day of a neighbour month we need do calculate
+    # if it is a previous or a next month. Since we show maximum of 6 days
+    # of a neighbour month we can be reasonably sure that if the day inside
+    # that cell is less then 10 than its a next month.
+    if currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
+      diff = if day > 10 then -1 else 1
+
+    selectedDate = new Date year, month + diff, day
+      
+    if not @settings.startDate? or selectedDate.getTime() >= @settings.startDate.getTime()
+      if not @settings.endDate? or selectedDate.getTime() <= @settings.endDate.getTime()
+        currentLi.parent().parent().find('li').removeClass LW_DP_ACTIVE_DAY_CLASS
+        currentLi.addClass LW_DP_ACTIVE_DAY_CLASS
+        @activeDate = selectedDate
+        if diff isnt 0 then @updateMonth diff  
+
+    @updateInput()
+
+    if @settings.autoHideAfterClick and fromEvent
+      @input?.blur()
+
+    if typeof @settings.onChange is 'function'
+      @settings.onChange @activeDate  
+
+ 
+  # Parses string to Date object
+  parseDate: (string) ->
+    if typeof @settings.parseDate is 'function'
+      @settings.parseDate string
+    else
+      new Date (Date.parse string)
+
+  # Formats date as text
+  formatDate: (date) ->
+    if typeof @settings.formatDate is 'function'
+      @settings.formatDate date
+    else
+      if date?
+      # By default in USA format: M/d/yyyy
+        (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear()
+      else
+        ''
+
+  # Shows next month
+  onNextClick: =>
+    @updateMonth 1
+
+  # Shows previous month
+  onPreviousClick: =>
+    @updateMonth -1
+
   # Renders names of days of the week
   renderDows: ->
-    first = @settings['dowNames'][@settings['firstDayOfTheWeekIndex']]
+    first = @settings.dowNames[@settings.firstDayOfTheWeekIndex]
     found = false
     html = "<ul class=#{LW_DP_DOWS_CLASS}>"
     temp = ''
-    for name in @settings['dowNames']
+    for name in @settings.dowNames
       if name is first then found = true
       day = "<li>#{name}</li>"
       if found then html += day else temp += day
@@ -324,71 +355,27 @@ class LightweightDatepicker
         @wrapper.css 'top': top
 
   # Called after active date changes
-  onChange: (e)=>
-    @saveData $(e.currentTarget)
+  onChange: ->
     @updateMonth()
-    @updateInput $(e.currentTarget)
+    @updateInput()
 
   # Hides day picker
-  hide: (e) =>
-    if not @settings['alwaysVisible'] and @shouldHide
-      @wrapper.addClass LW_DP_HIDDEN_CLASS
-      @wrapper.css 'top': '-9999px'
+  hide: =>
+    if not @settings.alwaysVisible and @shouldHide
+      @wrapper.remove()
     if not @shouldHide
       @input?.focus()
     @shouldHide = true
-    if e?
-      @onChange e      
 
   # Shows day picker
-  show: (e) =>
-    @wrapper.removeClass LW_DP_HIDDEN_CLASS
-    if e?
-      @loadData $ e.currentTarget
-      @updatePosition()
+  show: =>
+    @wrapper.appendTo document.body
+    @bindEvents()
+    @updatePosition()
     @updateMonth()
   
-  # Loads data associated with provided node
-  loadData: ($el) ->
-    data = $el.data LW_DP_DATA_KEY
-    $.extend @, data
-
-  # Validates Date object
-  isDateValid: (date) ->
-    if Object.prototype.toString.call(date) isnt '[object Date]'
-      return false;
-    # Add check for interval
-    return !isNaN(date.getTime())    
-
-  # Saves data
-  saveData: ($el) ->
-    parsedDate = @parseDate $el.val()
-    if @isDateValid parsedDate
-      # TODO There was a bug here.
-      # @currentDate = new Date parsedDate.getTime()
-      @activeDate = new Date parsedDate.getTime()
-    else if @settings['autoFillToday']
-      @activeDate = new Date @todayDate.getTime()
-    $el.data LW_DP_DATA_KEY,
-      activeDate: @activeDate
-      currentDate: new Date @currentDate.getTime()
-      input: $el
-
-  # Adds current input to list of elements binded to this date picker
-  bindEvents: =>
-    @input.bind 'focus', @show
-    @input.bind 'blur', @hide
-    @input.bind 'change', @onChange
-    @input.bind 'keydown', @handleKeyDown
-    @saveData @input
-    @loadData @input
-    @updatePosition()
-    @updateInput @input
-    @updateMonth()
-    @hide()
-
-  # Selects same day in changed month
-  changeMonth: =>
+  # Selects the same day in changed month
+  changeMonth: ->
     if @activeDate?
       activeIndex = @activeDate.getDate() - 1
       activeDate = new Date @activeDate.getTime()
@@ -397,15 +384,15 @@ class LightweightDatepicker
       days = $(@days).find "li:not(.#{LW_DP_NEIGHBOUR_MONTH_DAY_CLASS})"
       if days.length <= activeIndex
         @selectDay days.last(), false
-      else if @settings['endDate']? and activeDate.getTime() > @settings['endDate'].getTime()
-        @selectDay days.eq(@settings['endDate'].getDate() - 2), false
-      else if @settings['startDate']? and activeDate.getTime() < @settings['startDate'].getTime()
-        @selectDay days.eq(@settings['startDate'].getDate()), false
+      else if @settings.endDate? and activeDate.getTime() > @settings.endDate.getTime()
+        @selectDay days.eq(@settings.endDate.getDate() - 2), false
+      else if @settings.startDate? and activeDate.getTime() < @settings.startDate.getTime()
+        @selectDay days.eq(@settings.startDate.getDate()), false
       else
         @selectDay days.eq(activeIndex), false
 
   # Selects previous or next day
-  changeDay: (action) =>
+  changeDay: (action) ->
     direction = if action is 'prev' then 'last' else 'first'
     if @activeDate?
       $current = $(@days).find("li.#{LW_DP_ACTIVE_DAY_CLASS}")
@@ -422,7 +409,7 @@ class LightweightDatepicker
     handled = true
     switch keyCode
       when 27 # Esc
-        @hide()
+        # @hide()
         @input.blur()
       when 33 # PgUp
         if @canSelectPreviousMonth
@@ -438,8 +425,6 @@ class LightweightDatepicker
         @changeDay 'next'
       else
         handled = false
-    # There should be mistake in next line
-    # @updateMonth()
     return not handled
 
 # Adds plugin object to jQuery
