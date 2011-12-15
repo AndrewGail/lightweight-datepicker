@@ -37,6 +37,7 @@ $lw-dp-cell-border-color: $lw-dp-base-color !default;
 $lw-dp-z-index: 100 !default;
 $lw-dp-width: floor($lw-dp-cell-width * 7 + $lw-dp-cell-border-width * 8) !default;
 $lw-dp-padding: floor($lw-dp-base-font-size * 0.4) !default;
+$lw-dp-margin: $lw-dp-base-font-size * 0.5 !default;
 $lw-dp-background: $lw-dp-base-color !default;
 $lw-dp-border-width: $lw-dp-cell-border-width !default;
 $lw-dp-border-style: $lw-dp-cell-border-style !default;
@@ -96,6 +97,7 @@ $lw-dp-cell-weekend-background-color: contrast-color(
   border-style: $lw-dp-border-style;
   border-color: $lw-dp-border-color;
   padding: $lw-dp-padding;
+  margin: $lw-dp-margin;
   font-family: $lw-dp-font-family;
   @include border-radius($lw-dp-border-radius);
   @include box-shadow(rgba(0, 0, 0, 0.3) 0 2px 8px);
