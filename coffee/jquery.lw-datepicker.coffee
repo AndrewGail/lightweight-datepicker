@@ -98,6 +98,9 @@ class LightweightDatepicker
     @input.bind 'blur', @hide
     @input.bind 'keydown', @handleKeyDown
     @input.bind 'change', @onChange
+    @input.bind 'click', () =>
+      if not $('body').children(".#{LW_DP_CLASS}").has(@wrapper).length
+        @show()
 
     # Determines if it's Internet Explorer 7 or older
     @isIE = $.browser.msie and parseInt($.browser.version) <= 8
@@ -164,22 +167,29 @@ class LightweightDatepicker
     @wrapper.delegate ".#{LW_DP_NEXT_CLASS}", event, @onNextClick
     @wrapper.delegate ".#{LW_DP_PREVIOUS_CLASS}", event, @onPreviousClick
     $(@days).delegate "li:not(.#{LW_DP_ACTIVE_DAY_CLASS})", event, (e) =>
-      currentLi = $(e.currentTarget)
-      currentDay = currentLi.text()
-      currentYear = @currentDate.getFullYear()
-        
-      # When user clicks on a day of a neighbour month we need do calculate
-      # if it is a previous or a next month. Since we show maximum of 6 days
-      # of a neighbour month we can be reasonably sure that if the day inside
-      # that cell is less then 10 than its a next month.
-      diff = 0
-      if currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
-        diff = if currentDay > 10 then -1 else 1
-      currentMonth = @currentDate.getMonth() + diff
+      currentLi = $(e.currentTarget)      
+      @setDate @getDateFromElement currentLi
 
-      newDate = new Date currentYear, currentMonth, currentDay
-      # @selectDay currentLi
-      @setDate newDate
+      if @settings.autoHideAfterClick then @hide()        
+
+      # Calls optional user's onChange function
+      if typeof @settings.onChange is 'function'
+        @settings.onChange @activeDate
+
+  getDateFromElement: (el) =>
+    currentDay = el.text()
+    currentYear = @currentDate.getFullYear()
+      
+    # When user clicks on a day of a neighbour month we need do calculate
+    # if it is a previous or a next month. Since we show maximum of 6 days
+    # of a neighbour month we can be reasonably sure that if the day inside
+    # that cell is less then 10 than its a next month.
+    diff = 0
+    if el.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
+      diff = if currentDay > 10 then -1 else 1
+    currentMonth = @currentDate.getMonth() + diff
+    
+    return new Date currentYear, currentMonth, currentDay
 
   # Changes value of binded input to active date
   updateInput: ->
@@ -277,38 +287,6 @@ class LightweightDatepicker
 
     @days.html html
 
-  # Changes active day
-  selectDay: (currentLi, fromEvent = true) ->
-    year = @currentDate.getFullYear()
-    month = @currentDate.getMonth()
-    day = parseInt currentLi.text()
-    diff = 0
-
-    # When user clicks on a day of a neighbour month we need do calculate
-    # if it is a previous or a next month. Since we show maximum of 6 days
-    # of a neighbour month we can be reasonably sure that if the day inside
-    # that cell is less then 10 than its a next month.
-    if currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
-      diff = if day > 10 then -1 else 1
-
-    selectedDate = new Date year, month + diff, day
-      
-#TODO use our comparator
-    if not @settings.startDate? or selectedDate.getTime() >= @settings.startDate.getTime()
-      if not @settings.endDate? or selectedDate.getTime() <= @settings.endDate.getTime()
-        currentLi.parent().parent().find('li').removeClass LW_DP_ACTIVE_DAY_CLASS
-        currentLi.addClass LW_DP_ACTIVE_DAY_CLASS
-        @activeDate = selectedDate
-        if diff isnt 0 then @updateMonth diff  
-
-    @updateInput()
-
-    if @settings.autoHideAfterClick and fromEvent
-      @input?.blur()
-
-    if typeof @settings.onChange is 'function'
-      @settings.onChange @activeDate  
-
   # Sets active day
   setDate: (date) =>
     # Check if date is valid
@@ -318,22 +296,20 @@ class LightweightDatepicker
     # Check if date is inside the permitted period
     if not @isDateInsidePeriod date
       return false
-    
+
     # Sets active date
     oldDate = @activeDate
     @currentDate = @activeDate = date
 
     # Check if selected day's month differs from the current one
     if (date.getFullYear() is oldDate.getFullYear() and date.getMonth() is oldDate.getMonth())
-      console.log "Selected month is the same."
       @days.find("li.#{LW_DP_ACTIVE_DAY_CLASS}").removeClass LW_DP_ACTIVE_DAY_CLASS
       activeLi = @days.find("li:not(.#{LW_DP_NEIGHBOUR_MONTH_DAY_CLASS})").filter ->
         parseInt($(@).text(), 10) is date.getDate()
       activeLi.addClass LW_DP_ACTIVE_DAY_CLASS
     else
-      console.log "Selected month is different."
       @updateMonth()
-    
+
     @updateInput()
 
   # Check if date is inside the permitted period
@@ -418,7 +394,7 @@ class LightweightDatepicker
   # Hides day picker
   hide: =>
     if not @settings.alwaysVisible and @shouldHide
-      @wrapper.remove()
+      @wrapper.detach()
     if not @shouldHide
       @input?.focus()
     @shouldHide = true
@@ -426,7 +402,6 @@ class LightweightDatepicker
   # Shows day picker
   show: =>
     @wrapper.appendTo document.body
-    @bindEvents()
     @updatePosition()
     @updateMonth()
   
@@ -447,18 +422,6 @@ class LightweightDatepicker
       else
         @selectDay days.eq(activeIndex), false
 
-  # Selects previous or next day
-  changeDay: (action) ->
-    direction = if action is 'prev' then 'last' else 'first'
-    if @activeDate?
-      $current = $(@days).find("li.#{LW_DP_ACTIVE_DAY_CLASS}")
-      $el = $current[action]()
-      if not $el.length 
-        $el = $current.parent()[action]().children()[direction]()
-    else
-      $el = $(@days).find("li.#{LW_DP_TODAY_CLASS}")
-    @selectDay $el, false
-
   # Handles keyboard-navigation
   handleKeyDown: (e) =>
     keyCode = e.keyCode
@@ -476,9 +439,11 @@ class LightweightDatepicker
           @onNextClick()
           @changeMonth()
       when 38 # Up
-        @changeDay 'prev'
+        # Selects previous day
+        @setDate new Date(@activeDate.getFullYear(), @activeDate.getMonth(), @activeDate.getDate() - 1)
       when 40 # Down
-        @changeDay 'next'
+        # Selects next day
+        @setDate new Date(@activeDate.getFullYear(), @activeDate.getMonth(), @activeDate.getDate() + 1)
       else
         handled = false
     return not handled

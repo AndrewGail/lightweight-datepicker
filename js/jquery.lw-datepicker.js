@@ -88,11 +88,17 @@
       this.onNextClick = __bind(this.onNextClick, this);
       this.isDateInsidePeriod = __bind(this.isDateInsidePeriod, this);
       this.setDate = __bind(this.setDate, this);
-      this.updateMonth = __bind(this.updateMonth, this);      this.input = el;
+      this.updateMonth = __bind(this.updateMonth, this);
+      this.getDateFromElement = __bind(this.getDateFromElement, this);      this.input = el;
       this.input.bind('focus', this.show);
       this.input.bind('blur', this.hide);
       this.input.bind('keydown', this.handleKeyDown);
       this.input.bind('change', this.onChange);
+      this.input.bind('click', __bind(function() {
+        if (!$('body').children("." + LW_DP_CLASS).has(this.wrapper).length) {
+          return this.show();
+        }
+      }, this));
       this.isIE = $.browser.msie && parseInt($.browser.version) <= 8;
       this.input.data(LW_DP_DATA_KEY, true);
       this.settings = {
@@ -146,18 +152,27 @@
       this.wrapper.delegate("." + LW_DP_NEXT_CLASS, event, this.onNextClick);
       this.wrapper.delegate("." + LW_DP_PREVIOUS_CLASS, event, this.onPreviousClick);
       return $(this.days).delegate("li:not(." + LW_DP_ACTIVE_DAY_CLASS + ")", event, __bind(function(e) {
-        var currentDay, currentLi, currentMonth, currentYear, diff, newDate;
+        var currentLi;
         currentLi = $(e.currentTarget);
-        currentDay = currentLi.text();
-        currentYear = this.currentDate.getFullYear();
-        diff = 0;
-        if (currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)) {
-          diff = currentDay > 10 ? -1 : 1;
+        this.setDate(this.getDateFromElement(currentLi));
+        if (this.settings.autoHideAfterClick) {
+          this.hide();
         }
-        currentMonth = this.currentDate.getMonth() + diff;
-        newDate = new Date(currentYear, currentMonth, currentDay);
-        return this.setDate(newDate);
+        if (typeof this.settings.onChange === 'function') {
+          return this.settings.onChange(this.activeDate);
+        }
       }, this));
+    };
+    LightweightDatepicker.prototype.getDateFromElement = function(el) {
+      var currentDay, currentMonth, currentYear, diff;
+      currentDay = el.text();
+      currentYear = this.currentDate.getFullYear();
+      diff = 0;
+      if (el.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)) {
+        diff = currentDay > 10 ? -1 : 1;
+      }
+      currentMonth = this.currentDate.getMonth() + diff;
+      return new Date(currentYear, currentMonth, currentDay);
     };
     LightweightDatepicker.prototype.updateInput = function() {
       return this.input.val(this.formatDate(this.activeDate));
@@ -239,39 +254,6 @@
       }
       return this.days.html(html);
     };
-    LightweightDatepicker.prototype.selectDay = function(currentLi, fromEvent) {
-      var day, diff, month, selectedDate, year, _ref;
-      if (fromEvent == null) {
-        fromEvent = true;
-      }
-      year = this.currentDate.getFullYear();
-      month = this.currentDate.getMonth();
-      day = parseInt(currentLi.text());
-      diff = 0;
-      if (currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)) {
-        diff = day > 10 ? -1 : 1;
-      }
-      selectedDate = new Date(year, month + diff, day);
-      if (!(this.settings.startDate != null) || selectedDate.getTime() >= this.settings.startDate.getTime()) {
-        if (!(this.settings.endDate != null) || selectedDate.getTime() <= this.settings.endDate.getTime()) {
-          currentLi.parent().parent().find('li').removeClass(LW_DP_ACTIVE_DAY_CLASS);
-          currentLi.addClass(LW_DP_ACTIVE_DAY_CLASS);
-          this.activeDate = selectedDate;
-          if (diff !== 0) {
-            this.updateMonth(diff);
-          }
-        }
-      }
-      this.updateInput();
-      if (this.settings.autoHideAfterClick && fromEvent) {
-        if ((_ref = this.input) != null) {
-          _ref.blur();
-        }
-      }
-      if (typeof this.settings.onChange === 'function') {
-        return this.settings.onChange(this.activeDate);
-      }
-    };
     LightweightDatepicker.prototype.setDate = function(date) {
       var activeLi, oldDate;
       if (!isDateValid(date)) {
@@ -283,14 +265,12 @@
       oldDate = this.activeDate;
       this.currentDate = this.activeDate = date;
       if (date.getFullYear() === oldDate.getFullYear() && date.getMonth() === oldDate.getMonth()) {
-        console.log("Selected month is the same.");
         this.days.find("li." + LW_DP_ACTIVE_DAY_CLASS).removeClass(LW_DP_ACTIVE_DAY_CLASS);
         activeLi = this.days.find("li:not(." + LW_DP_NEIGHBOUR_MONTH_DAY_CLASS + ")").filter(function() {
           return parseInt($(this).text(), 10) === date.getDate();
         });
         activeLi.addClass(LW_DP_ACTIVE_DAY_CLASS);
       } else {
-        console.log("Selected month is different.");
         this.updateMonth();
       }
       return this.updateInput();
@@ -396,7 +376,7 @@
     LightweightDatepicker.prototype.hide = function() {
       var _ref;
       if (!this.settings.alwaysVisible && this.shouldHide) {
-        this.wrapper.remove();
+        this.wrapper.detach();
       }
       if (!this.shouldHide) {
         if ((_ref = this.input) != null) {
@@ -407,7 +387,6 @@
     };
     LightweightDatepicker.prototype.show = function() {
       this.wrapper.appendTo(document.body);
-      this.bindEvents();
       this.updatePosition();
       return this.updateMonth();
     };
@@ -430,20 +409,6 @@
         }
       }
     };
-    LightweightDatepicker.prototype.changeDay = function(action) {
-      var $current, $el, direction;
-      direction = action === 'prev' ? 'last' : 'first';
-      if (this.activeDate != null) {
-        $current = $(this.days).find("li." + LW_DP_ACTIVE_DAY_CLASS);
-        $el = $current[action]();
-        if (!$el.length) {
-          $el = $current.parent()[action]().children()[direction]();
-        }
-      } else {
-        $el = $(this.days).find("li." + LW_DP_TODAY_CLASS);
-      }
-      return this.selectDay($el, false);
-    };
     LightweightDatepicker.prototype.handleKeyDown = function(e) {
       var handled, keyCode;
       keyCode = e.keyCode;
@@ -465,10 +430,10 @@
           }
           break;
         case 38:
-          this.changeDay('prev');
+          this.setDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() - 1));
           break;
         case 40:
-          this.changeDay('next');
+          this.setDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() + 1));
           break;
         default:
           handled = false;
