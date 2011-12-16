@@ -74,26 +74,25 @@
     return !isNaN(date.getTime());
   };
   LightweightDatepicker = (function() {
-    LightweightDatepicker.prototype.input = null;
-    LightweightDatepicker.prototype.activeDate = null;
-    LightweightDatepicker.prototype.canSelectPreviousMonth = true;
-    LightweightDatepicker.prototype.canSelectNextMonth = true;
+    LightweightDatepicker.prototype.canShowPreviousMonth = true;
+    LightweightDatepicker.prototype.canShowNextMonth = true;
     LightweightDatepicker.prototype.shouldHide = true;
     function LightweightDatepicker(el, settings) {
       this.handleKeyDown = __bind(this.handleKeyDown, this);
+      this.showNextMonth = __bind(this.showNextMonth, this);
+      this.showPreviousMonth = __bind(this.showPreviousMonth, this);
       this.show = __bind(this.show, this);
       this.hide = __bind(this.hide, this);
-      this.onPreviousClick = __bind(this.onPreviousClick, this);
-      this.onNextClick = __bind(this.onNextClick, this);
       this.isDateInsidePeriod = __bind(this.isDateInsidePeriod, this);
-      this.setDate = __bind(this.setDate, this);
+      this.setCurrentDate = __bind(this.setCurrentDate, this);
+      this.setActiveDate = __bind(this.setActiveDate, this);
       this.updateMonth = __bind(this.updateMonth, this);
       this.getDateFromElement = __bind(this.getDateFromElement, this);      this.input = el;
       this.input.bind('focus', this.show);
       this.input.bind('blur', this.hide);
       this.input.bind('keydown', this.handleKeyDown);
       this.input.bind('change', __bind(function() {
-        return this.setDate(this.parseDate(this.input.val()));
+        return this.setActiveDate(this.parseDate(this.input.val()));
       }, this));
       this.input.bind('click', __bind(function() {
         if (!$('body').children("." + lw_dp_class).has(this.wrapper).length) {
@@ -129,7 +128,6 @@
       this.updateInput();
       this.updateMonth();
       this.hide();
-      this.setDate(new Date(2011, 11, 13));
     }
     LightweightDatepicker.prototype.createDatepicker = function() {
       this.wrapper = $("<div class=" + lw_dp_class + "/>");
@@ -150,12 +148,12 @@
         }
       }, this));
       event = this.isIE ? 'mousedown' : 'click';
-      this.wrapper.delegate("." + lw_dp_next_class, event, this.onNextClick);
-      this.wrapper.delegate("." + lw_dp_previous_class, event, this.onPreviousClick);
+      this.wrapper.delegate("." + lw_dp_next_class, event, this.showNextMonth);
+      this.wrapper.delegate("." + lw_dp_previous_class, event, this.showPreviousMonth);
       return $(this.days).delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
         var currentLi;
         currentLi = $(e.currentTarget);
-        this.setDate(this.getDateFromElement(currentLi));
+        this.setActiveDate(this.getDateFromElement(currentLi));
         if (this.settings.autoHideAfterClick) {
           this.hide();
         }
@@ -184,18 +182,18 @@
       cd = this.currentDate;
       lastDayOfPreviousMonth = new Date(cd.getFullYear(), cd.getMonth(), 0);
       if ((this.settings.startDate != null) && lastDayOfPreviousMonth.getTime() < this.settings.startDate.getTime()) {
-        this.canSelectPreviousMonth = false;
+        this.canShowPreviousMonth = false;
         $(this.previous).hide();
       } else {
-        this.canSelectPreviousMonth = true;
+        this.canShowPreviousMonth = true;
         $(this.previous).show();
       }
       firstDayOfNextMonth = new Date(cd.getFullYear(), cd.getMonth() + 1, 1);
       if ((this.settings.endDate != null) && firstDayOfNextMonth.getTime() > this.settings.endDate.getTime()) {
-        this.canSelectNextMonth = false;
+        this.canShowNextMonth = false;
         $(this.next).hide();
       } else {
-        this.canSelectNextMonth = true;
+        this.canShowNextMonth = true;
         $(this.next).show();
       }
       firstDayDow = (new Date(cd.getFullYear(), cd.getMonth(), 1)).getDay();
@@ -255,7 +253,7 @@
       }
       return this.days.html(html);
     };
-    LightweightDatepicker.prototype.setDate = function(date) {
+    LightweightDatepicker.prototype.setActiveDate = function(date) {
       var activeLi, oldDate;
       if (!isDateValid(date)) {
         return false;
@@ -264,17 +262,20 @@
         return false;
       }
       oldDate = this.activeDate;
-      this.currentDate = this.activeDate = date;
+      this.activeDate = date;
+      this.setCurrentDate(date);
+      this.updateInput();
       if (date.getFullYear() === oldDate.getFullYear() && date.getMonth() === oldDate.getMonth()) {
         this.days.find("li." + lw_dp_active_day_class).removeClass(lw_dp_active_day_class);
         activeLi = this.days.find("li:not(." + lw_dp_neighbour_month_day_class + ")").filter(function() {
           return parseInt($(this).text(), 10) === date.getDate();
         });
-        activeLi.addClass(lw_dp_active_day_class);
-      } else {
-        this.updateMonth();
+        return activeLi.addClass(lw_dp_active_day_class);
       }
-      return this.updateInput();
+    };
+    LightweightDatepicker.prototype.setCurrentDate = function(date) {
+      this.currentDate = date;
+      return this.updateMonth();
     };
     LightweightDatepicker.prototype.isDateInsidePeriod = function(date) {
       if ((this.settings.startDate != null) && (compareDates(date, this.settings.startDate) === -1)) {
@@ -302,12 +303,6 @@
           return '';
         }
       }
-    };
-    LightweightDatepicker.prototype.onNextClick = function() {
-      return this.updateMonth(1);
-    };
-    LightweightDatepicker.prototype.onPreviousClick = function() {
-      return this.updateMonth(-1);
     };
     LightweightDatepicker.prototype.renderDows = function() {
       var day, first, found, html, name, temp, _i, _len, _ref;
@@ -387,24 +382,11 @@
       this.updatePosition();
       return this.updateMonth();
     };
-    LightweightDatepicker.prototype.changeMonth = function() {
-      var activeDate, activeIndex, days;
-      if (this.activeDate != null) {
-        activeIndex = this.activeDate.getDate() - 1;
-        activeDate = new Date(this.activeDate.getTime());
-        activeDate.setMonth(this.currentDate.getMonth());
-        activeDate.setFullYear(this.currentDate.getFullYear());
-        days = $(this.days).find("li:not(." + lw_dp_neighbour_month_day_class + ")");
-        if (days.length <= activeIndex) {
-          return this.selectDay(days.last(), false);
-        } else if ((this.settings.endDate != null) && activeDate.getTime() > this.settings.endDate.getTime()) {
-          return this.selectDay(days.eq(this.settings.endDate.getDate() - 2), false);
-        } else if ((this.settings.startDate != null) && activeDate.getTime() < this.settings.startDate.getTime()) {
-          return this.selectDay(days.eq(this.settings.startDate.getDate()), false);
-        } else {
-          return this.selectDay(days.eq(activeIndex), false);
-        }
-      }
+    LightweightDatepicker.prototype.showPreviousMonth = function() {
+      return this.setCurrentDate(new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, this.currentDate.getDate()));
+    };
+    LightweightDatepicker.prototype.showNextMonth = function() {
+      return this.setCurrentDate(new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, this.currentDate.getDate()));
     };
     LightweightDatepicker.prototype.handleKeyDown = function(e) {
       var handled, keyCode;
@@ -415,22 +397,16 @@
           this.input.blur();
           break;
         case 33:
-          if (this.canSelectPreviousMonth) {
-            this.onPreviousClick();
-            this.changeMonth();
-          }
+          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() - 1, this.activeDate.getDate()));
           break;
         case 34:
-          if (this.canSelectNextMonth) {
-            this.onNextClick();
-            this.changeMonth();
-          }
+          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() + 1, this.activeDate.getDate()));
           break;
         case 38:
-          this.setDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() - 1));
+          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() - 1));
           break;
         case 40:
-          this.setDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() + 1));
+          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() + 1));
           break;
         default:
           handled = false;
