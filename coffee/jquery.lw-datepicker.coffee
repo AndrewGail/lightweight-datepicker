@@ -63,10 +63,20 @@ LW_DP_WEEKEND_CLASS = 'lw-dp-weekend'
 LW_DP_DATA_KEY = 'lw-datepicker'
 
 # Checks whether two dates are equal to each other
-checkEqualDates = (date1, date2) ->
-  return false if date1.getFullYear() isnt date2.getFullYear()
-  return false if date1.getMonth() isnt date2.getMonth() 
-  date1.getDate() is date2.getDate()
+compareDates = (date1, date2) ->
+  return -1 if date1.getFullYear() < date2.getFullYear()
+  return 1 if date1.getFullYear() > date2.getFullYear()
+  return -1 if date1.getMonth() < date2.getMonth()
+  return 1 if date1.getMonth() > date2.getMonth()
+  return -1 if date1.getDate() < date2.getDate()
+  return 1 if date1.getDate() > date2.getDate()
+  return 0
+
+# Checks whether date is valid
+isDateValid = (date) ->
+  if Object.prototype.toString.call(date) isnt '[object Date]'
+    return false;    
+  return not isNaN(date.getTime())    
 
 # Class constructor
 class LightweightDatepicker
@@ -130,6 +140,8 @@ class LightweightDatepicker
     @updateMonth()
     @hide()
 
+    @setDate new Date 2011, 11, 13
+
   # Creates necessary markup
   createDatepicker: ->
     @wrapper = $ "<div class=#{LW_DP_CLASS}/>"
@@ -153,16 +165,28 @@ class LightweightDatepicker
     @wrapper.delegate ".#{LW_DP_PREVIOUS_CLASS}", event, @onPreviousClick
     $(@days).delegate "li:not(.#{LW_DP_ACTIVE_DAY_CLASS})", event, (e) =>
       currentLi = $(e.currentTarget)
-      @selectDay currentLi
+      currentDay = currentLi.text()
+      currentYear = @currentDate.getFullYear()
+        
+      # When user clicks on a day of a neighbour month we need do calculate
+      # if it is a previous or a next month. Since we show maximum of 6 days
+      # of a neighbour month we can be reasonably sure that if the day inside
+      # that cell is less then 10 than its a next month.
+      diff = 0
+      if currentLi.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
+        diff = if currentDay > 10 then -1 else 1
+      currentMonth = @currentDate.getMonth() + diff
+
+      newDate = new Date currentYear, currentMonth, currentDay
+      # @selectDay currentLi
+      @setDate newDate
 
   # Changes value of binded input to active date
   updateInput: ->
     @input.val @formatDate @activeDate
 
-  # Renders month
-  updateMonth: (diff = 0) =>
-    @currentDate.setMonth @currentDate.getMonth() + diff
-    
+  # Renders current month
+  updateMonth: =>
     # Updates month name and year
     @month.html @settings.monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
 
@@ -218,19 +242,16 @@ class LightweightDatepicker
         classes.push LW_DP_WEEK_LAST_COLUMN_CLASS
 
       # Handles today
-      if checkEqualDates day, @todayDate
+      if compareDates(day, @todayDate) is 0
         classes.push LW_DP_TODAY_CLASS
         liContent = """<span>#{liContent}</span>"""
 
       # Handles active day
-      if @activeDate? and checkEqualDates day, @activeDate
+      if @activeDate? and compareDates(day, @activeDate) == 0
         classes.push LW_DP_ACTIVE_DAY_CLASS
 
       # Handles date interval borders
-      if @settings.startDate and day.getTime() <= @settings.startDate.getTime()
-        classes.push LW_DP_OUT_OF_INTERVAL_CLASS
-        liContent = ''
-      if @settings.endDate and day.getTime() >= @settings.endDate.getTime()
+      if not @isDateInsidePeriod date
         classes.push LW_DP_OUT_OF_INTERVAL_CLASS
         liContent = ''
 
@@ -272,6 +293,7 @@ class LightweightDatepicker
 
     selectedDate = new Date year, month + diff, day
       
+#TODO use our comparator
     if not @settings.startDate? or selectedDate.getTime() >= @settings.startDate.getTime()
       if not @settings.endDate? or selectedDate.getTime() <= @settings.endDate.getTime()
         currentLi.parent().parent().find('li').removeClass LW_DP_ACTIVE_DAY_CLASS
@@ -287,7 +309,41 @@ class LightweightDatepicker
     if typeof @settings.onChange is 'function'
       @settings.onChange @activeDate  
 
- 
+  # Sets active day
+  setDate: (date) =>
+    # Check if date is valid
+    if not isDateValid date
+      return false
+
+    # Check if date is inside the permitted period
+    if not @isDateInsidePeriod date
+      return false
+    
+    # Sets active date
+    oldDate = @activeDate
+    @currentDate = @activeDate = date
+
+    # Check if selected day's month differs from the current one
+    if (date.getFullYear() is oldDate.getFullYear() and date.getMonth() is oldDate.getMonth())
+      console.log "Selected month is the same."
+      @days.find("li.#{LW_DP_ACTIVE_DAY_CLASS}").removeClass LW_DP_ACTIVE_DAY_CLASS
+      activeLi = @days.find("li:not(.#{LW_DP_NEIGHBOUR_MONTH_DAY_CLASS})").filter ->
+        parseInt($(@).text(), 10) is date.getDate()
+      activeLi.addClass LW_DP_ACTIVE_DAY_CLASS
+    else
+      console.log "Selected month is different."
+      @updateMonth()
+    
+    @updateInput()
+
+  # Check if date is inside the permitted period
+  isDateInsidePeriod: (date) =>
+    if @settings.startDate? and (compareDates(date, @settings.startDate) is -1)
+      return false
+    if @settings.endDate? and (compareDates(date, @settings.endDate) is 1)
+      return false
+    return true
+   
   # Parses string to Date object
   parseDate: (string) ->
     if typeof @settings.parseDate is 'function'
@@ -355,7 +411,7 @@ class LightweightDatepicker
         @wrapper.css 'top': top
 
   # Called after active date changes
-  onChange: ->
+  onChange: =>
     @updateMonth()
     @updateInput()
 

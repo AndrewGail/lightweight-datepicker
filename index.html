@@ -4,19 +4,16 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/datepicker.css" type="text/css" media="screen">
-  <script src="js/jquery-1.6.4.js"></script>
+  <script src="js/jquery-1.7.1.min.js"></script>
   <script src="js/jquery.lw-datepicker.js"></script>
   <script type="text/javascript">
     $(function(){
-      $('#date1').lwDatepicker({
+      $('#date1, #date2, #date3').lwDatepicker({
         autoHideAfterClick: false,
         autoFillToday: true,
-        alwaysVisible: false
-      });
-      $('#date2, #date3').lwDatepicker({
-        autoHideAfterClick: false,
-        autoFillToday: true,
-        alwaysVisible: false
+        startDate: new Date(2010, 11, 10),
+        endDate: new Date(2012, 11, 16),
+        firstDayOfTheWeekIndex: 1
       });
     });
   </script>
