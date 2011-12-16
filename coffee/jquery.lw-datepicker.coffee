@@ -41,26 +41,26 @@ settings =
   'onChange': null
 
 # Classes
-LW_DP_CLASS = 'lw-dp'
-LW_DP_ACTIVE_DAY_CLASS = 'lw-dp-active-day'
-LW_DP_DOWS_CLASS = 'lw-dp-dows'
-LW_DP_DOWS_LAST_COLUMN_CLASS = 'lw-dp-dows-last-column'
-LW_DP_FIRSTWEEK_CLASS = 'lw-dp-firstweek'
-LW_DP_HIDDEN_CLASS = 'lw-dp-hidden'
-LW_DP_LASTWEEK_CLASS = 'lw-dp-lastweek'
-LW_DP_MONTH_CLASS = 'lw-dp-month'
-LW_DP_NEIGHBOUR_MONTH_DAY_CLASS = 'lw-dp-neighbour-month-day'
-LW_DP_NEXT_CLASS = 'lw-dp-next'
-LW_DP_OUT_OF_INTERVAL_CLASS = 'lw-dp-out-of-interval'
-LW_DP_PREVIOUS_CLASS = 'lw-dp-previous'
-LW_DP_TODAY_CLASS = 'lw-dp-today'
-LW_DP_TOOLBAR_CLASS = 'lw-dp-toolbar'
-LW_DP_WEEK_CLASS = 'lw-dp-week'
-LW_DP_WEEK_LAST_COLUMN_CLASS = 'lw-dp-week-last-column'
-LW_DP_WEEKEND_CLASS = 'lw-dp-weekend'
+lw_dp_class = 'lw-dp'
+lw_dp_active_day_class = 'lw-dp-active-day'
+lw_dp_dows_class = 'lw-dp-dows'
+lw_dp_dows_last_column_class = 'lw-dp-dows-last-column'
+lw_dp_firstweek_class = 'lw-dp-firstweek'
+lw_dp_hidden_class = 'lw-dp-hidden'
+lw_dp_lastweek_class = 'lw-dp-lastweek'
+lw_dp_month_class = 'lw-dp-month'
+lw_dp_neighbour_month_day_class = 'lw-dp-neighbour-month-day'
+lw_dp_next_class = 'lw-dp-next'
+lw_dp_out_of_interval_class = 'lw-dp-out-of-interval'
+lw_dp_previous_class = 'lw-dp-previous'
+lw_dp_today_class = 'lw-dp-today'
+lw_dp_toolbar_class = 'lw-dp-toolbar'
+lw_dp_week_class = 'lw-dp-week'
+lw_dp_week_last_column_class = 'lw-dp-week-last-column'
+lw_dp_weekend_class = 'lw-dp-weekend'
 
 # Other constants
-LW_DP_DATA_KEY = 'lw-datepicker'
+lw_dp_data_key = 'lw-datepicker'
 
 # Checks whether two dates are equal to each other
 compareDates = (date1, date2) ->
@@ -97,16 +97,17 @@ class LightweightDatepicker
     @input.bind 'focus', @show
     @input.bind 'blur', @hide
     @input.bind 'keydown', @handleKeyDown
-    @input.bind 'change', @onChange
+    @input.bind 'change', () =>
+      @setDate @parseDate @input.val()
     @input.bind 'click', () =>
-      if not $('body').children(".#{LW_DP_CLASS}").has(@wrapper).length
+      if not $('body').children(".#{lw_dp_class}").has(@wrapper).length
         @show()
 
     # Determines if it's Internet Explorer 7 or older
-    @isIE = $.browser.msie and parseInt($.browser.version) <= 8
+    @isIE = $.browser.msie and parseInt($.browser.version, 10) <= 8
 
     # Necessary for prevent binding two or more datepickers to one input
-    @input.data LW_DP_DATA_KEY, true
+    @input.data lw_dp_data_key, true
 
     # Saves settings
     # Manually assigning values for better file size optimization
@@ -147,11 +148,11 @@ class LightweightDatepicker
 
   # Creates necessary markup
   createDatepicker: ->
-    @wrapper = $ "<div class=#{LW_DP_CLASS}/>"
-    @toolbar = $("<div class=#{LW_DP_TOOLBAR_CLASS}/>").appendTo @wrapper
-    @previous = $("<div class=#{LW_DP_PREVIOUS_CLASS}>◄</div>").appendTo @toolbar
-    @next = $("<div class=#{LW_DP_NEXT_CLASS}>►</div>").appendTo @toolbar
-    @month = $("<div class=#{LW_DP_MONTH_CLASS}/>").appendTo @toolbar
+    @wrapper = $ "<div class=#{lw_dp_class}/>"
+    @toolbar = $("<div class=#{lw_dp_toolbar_class}/>").appendTo @wrapper
+    @previous = $("<div class=#{lw_dp_previous_class}>◄</div>").appendTo @toolbar
+    @next = $("<div class=#{lw_dp_next_class}>►</div>").appendTo @toolbar
+    @month = $("<div class=#{lw_dp_month_class}/>").appendTo @toolbar
     @renderDows().appendTo @wrapper
     @days = $('<div/>').appendTo @wrapper
 
@@ -164,9 +165,9 @@ class LightweightDatepicker
 
     # Datepicker events
     event = if @isIE then 'mousedown' else 'click'
-    @wrapper.delegate ".#{LW_DP_NEXT_CLASS}", event, @onNextClick
-    @wrapper.delegate ".#{LW_DP_PREVIOUS_CLASS}", event, @onPreviousClick
-    $(@days).delegate "li:not(.#{LW_DP_ACTIVE_DAY_CLASS})", event, (e) =>
+    @wrapper.delegate ".#{lw_dp_next_class}", event, @onNextClick
+    @wrapper.delegate ".#{lw_dp_previous_class}", event, @onPreviousClick
+    $(@days).delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
       currentLi = $(e.currentTarget)      
       @setDate @getDateFromElement currentLi
 
@@ -185,7 +186,7 @@ class LightweightDatepicker
     # of a neighbour month we can be reasonably sure that if the day inside
     # that cell is less then 10 than its a next month.
     diff = 0
-    if el.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)
+    if el.hasClass(lw_dp_neighbour_month_day_class)
       diff = if currentDay > 10 then -1 else 1
     currentMonth = @currentDate.getMonth() + diff
     
@@ -241,28 +242,28 @@ class LightweightDatepicker
 
       # Handles days of previous and next month
       if day.getMonth() isnt cd.getMonth()
-        classes.push LW_DP_NEIGHBOUR_MONTH_DAY_CLASS
+        classes.push lw_dp_neighbour_month_day_class
       
       # Handles weekends
       if day.getDay() is 0 or day.getDay() is 6 # weekends
-        classes.push LW_DP_WEEKEND_CLASS
+        classes.push lw_dp_weekend_class
       
       # Handles right borders
       if day.getDay() is lastDowIndex
-        classes.push LW_DP_WEEK_LAST_COLUMN_CLASS
+        classes.push lw_dp_week_last_column_class
 
       # Handles today
       if compareDates(day, @todayDate) is 0
-        classes.push LW_DP_TODAY_CLASS
+        classes.push lw_dp_today_class
         liContent = """<span>#{liContent}</span>"""
 
       # Handles active day
       if @activeDate? and compareDates(day, @activeDate) == 0
-        classes.push LW_DP_ACTIVE_DAY_CLASS
+        classes.push lw_dp_active_day_class
 
       # Handles date interval borders
       if not @isDateInsidePeriod date
-        classes.push LW_DP_OUT_OF_INTERVAL_CLASS
+        classes.push lw_dp_out_of_interval_class
         liContent = ''
 
       if classes.length
@@ -276,11 +277,11 @@ class LightweightDatepicker
 
     for week in [1..weeks]
       if week is 1 # First week
-        html += "<ul class='#{LW_DP_WEEK_CLASS} #{LW_DP_FIRSTWEEK_CLASS}'>"
+        html += "<ul class='#{lw_dp_week_class} #{lw_dp_firstweek_class}'>"
       else if week is weeks # Last week
-        html += "<ul class='#{LW_DP_WEEK_CLASS} #{LW_DP_LASTWEEK_CLASS}'>"
+        html += "<ul class='#{lw_dp_week_class} #{lw_dp_lastweek_class}'>"
       else # Common week
-        html += "<ul class=#{LW_DP_WEEK_CLASS}>"
+        html += "<ul class=#{lw_dp_week_class}>"
       for day in [1..7]
         html += renderDay date
       html += '</ul>'    
@@ -303,10 +304,10 @@ class LightweightDatepicker
 
     # Check if selected day's month differs from the current one
     if (date.getFullYear() is oldDate.getFullYear() and date.getMonth() is oldDate.getMonth())
-      @days.find("li.#{LW_DP_ACTIVE_DAY_CLASS}").removeClass LW_DP_ACTIVE_DAY_CLASS
-      activeLi = @days.find("li:not(.#{LW_DP_NEIGHBOUR_MONTH_DAY_CLASS})").filter ->
+      @days.find("li.#{lw_dp_active_day_class}").removeClass lw_dp_active_day_class
+      activeLi = @days.find("li:not(.#{lw_dp_neighbour_month_day_class})").filter ->
         parseInt($(@).text(), 10) is date.getDate()
-      activeLi.addClass LW_DP_ACTIVE_DAY_CLASS
+      activeLi.addClass lw_dp_active_day_class
     else
       @updateMonth()
 
@@ -350,7 +351,7 @@ class LightweightDatepicker
   renderDows: ->
     first = @settings.dowNames[@settings.firstDayOfTheWeekIndex]
     found = false
-    html = "<ul class=#{LW_DP_DOWS_CLASS}>"
+    html = "<ul class=#{lw_dp_dows_class}>"
     temp = ''
     for name in @settings.dowNames
       if name is first then found = true
@@ -386,11 +387,6 @@ class LightweightDatepicker
       else
         @wrapper.css 'top': top
 
-  # Called after active date changes
-  onChange: =>
-    @updateMonth()
-    @updateInput()
-
   # Hides day picker
   hide: =>
     if not @settings.alwaysVisible and @shouldHide
@@ -412,7 +408,7 @@ class LightweightDatepicker
       activeDate = new Date @activeDate.getTime()
       activeDate.setMonth @currentDate.getMonth()
       activeDate.setFullYear @currentDate.getFullYear()
-      days = $(@days).find "li:not(.#{LW_DP_NEIGHBOUR_MONTH_DAY_CLASS})"
+      days = $(@days).find "li:not(.#{lw_dp_neighbour_month_day_class})"
       if days.length <= activeIndex
         @selectDay days.last(), false
       else if @settings.endDate? and activeDate.getTime() > @settings.endDate.getTime()
@@ -456,5 +452,5 @@ $.fn['lwDatepicker'] = (options) ->
     $el = $(@)
     # Prevents binding to inappropriate elments
     # and binding more than one datepicker to one element.
-    if ($el.is 'input, textarea') and not $el.data LW_DP_DATA_KEY
+    if ($el.is 'input, textarea') and not $el.data lw_dp_data_key
       new LightweightDatepicker $el, options

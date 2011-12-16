@@ -12,7 +12,7 @@
    *   http://www.opensource.org/licenses/mit-license.php
    *   http://www.gnu.org/licenses/gpl.html
    */
-  var $, LW_DP_ACTIVE_DAY_CLASS, LW_DP_CLASS, LW_DP_DATA_KEY, LW_DP_DOWS_CLASS, LW_DP_DOWS_LAST_COLUMN_CLASS, LW_DP_FIRSTWEEK_CLASS, LW_DP_HIDDEN_CLASS, LW_DP_LASTWEEK_CLASS, LW_DP_MONTH_CLASS, LW_DP_NEIGHBOUR_MONTH_DAY_CLASS, LW_DP_NEXT_CLASS, LW_DP_OUT_OF_INTERVAL_CLASS, LW_DP_PREVIOUS_CLASS, LW_DP_TODAY_CLASS, LW_DP_TOOLBAR_CLASS, LW_DP_WEEKEND_CLASS, LW_DP_WEEK_CLASS, LW_DP_WEEK_LAST_COLUMN_CLASS, LightweightDatepicker, compareDates, isDateValid, settings;
+  var $, LightweightDatepicker, compareDates, isDateValid, lw_dp_active_day_class, lw_dp_class, lw_dp_data_key, lw_dp_dows_class, lw_dp_dows_last_column_class, lw_dp_firstweek_class, lw_dp_hidden_class, lw_dp_lastweek_class, lw_dp_month_class, lw_dp_neighbour_month_day_class, lw_dp_next_class, lw_dp_out_of_interval_class, lw_dp_previous_class, lw_dp_today_class, lw_dp_toolbar_class, lw_dp_week_class, lw_dp_week_last_column_class, lw_dp_weekend_class, settings;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $ = jQuery;
   settings = {
@@ -28,24 +28,24 @@
     'formatDate': null,
     'onChange': null
   };
-  LW_DP_CLASS = 'lw-dp';
-  LW_DP_ACTIVE_DAY_CLASS = 'lw-dp-active-day';
-  LW_DP_DOWS_CLASS = 'lw-dp-dows';
-  LW_DP_DOWS_LAST_COLUMN_CLASS = 'lw-dp-dows-last-column';
-  LW_DP_FIRSTWEEK_CLASS = 'lw-dp-firstweek';
-  LW_DP_HIDDEN_CLASS = 'lw-dp-hidden';
-  LW_DP_LASTWEEK_CLASS = 'lw-dp-lastweek';
-  LW_DP_MONTH_CLASS = 'lw-dp-month';
-  LW_DP_NEIGHBOUR_MONTH_DAY_CLASS = 'lw-dp-neighbour-month-day';
-  LW_DP_NEXT_CLASS = 'lw-dp-next';
-  LW_DP_OUT_OF_INTERVAL_CLASS = 'lw-dp-out-of-interval';
-  LW_DP_PREVIOUS_CLASS = 'lw-dp-previous';
-  LW_DP_TODAY_CLASS = 'lw-dp-today';
-  LW_DP_TOOLBAR_CLASS = 'lw-dp-toolbar';
-  LW_DP_WEEK_CLASS = 'lw-dp-week';
-  LW_DP_WEEK_LAST_COLUMN_CLASS = 'lw-dp-week-last-column';
-  LW_DP_WEEKEND_CLASS = 'lw-dp-weekend';
-  LW_DP_DATA_KEY = 'lw-datepicker';
+  lw_dp_class = 'lw-dp';
+  lw_dp_active_day_class = 'lw-dp-active-day';
+  lw_dp_dows_class = 'lw-dp-dows';
+  lw_dp_dows_last_column_class = 'lw-dp-dows-last-column';
+  lw_dp_firstweek_class = 'lw-dp-firstweek';
+  lw_dp_hidden_class = 'lw-dp-hidden';
+  lw_dp_lastweek_class = 'lw-dp-lastweek';
+  lw_dp_month_class = 'lw-dp-month';
+  lw_dp_neighbour_month_day_class = 'lw-dp-neighbour-month-day';
+  lw_dp_next_class = 'lw-dp-next';
+  lw_dp_out_of_interval_class = 'lw-dp-out-of-interval';
+  lw_dp_previous_class = 'lw-dp-previous';
+  lw_dp_today_class = 'lw-dp-today';
+  lw_dp_toolbar_class = 'lw-dp-toolbar';
+  lw_dp_week_class = 'lw-dp-week';
+  lw_dp_week_last_column_class = 'lw-dp-week-last-column';
+  lw_dp_weekend_class = 'lw-dp-weekend';
+  lw_dp_data_key = 'lw-datepicker';
   compareDates = function(date1, date2) {
     if (date1.getFullYear() < date2.getFullYear()) {
       return -1;
@@ -83,7 +83,6 @@
       this.handleKeyDown = __bind(this.handleKeyDown, this);
       this.show = __bind(this.show, this);
       this.hide = __bind(this.hide, this);
-      this.onChange = __bind(this.onChange, this);
       this.onPreviousClick = __bind(this.onPreviousClick, this);
       this.onNextClick = __bind(this.onNextClick, this);
       this.isDateInsidePeriod = __bind(this.isDateInsidePeriod, this);
@@ -93,14 +92,16 @@
       this.input.bind('focus', this.show);
       this.input.bind('blur', this.hide);
       this.input.bind('keydown', this.handleKeyDown);
-      this.input.bind('change', this.onChange);
+      this.input.bind('change', __bind(function() {
+        return this.setDate(this.parseDate(this.input.val()));
+      }, this));
       this.input.bind('click', __bind(function() {
-        if (!$('body').children("." + LW_DP_CLASS).has(this.wrapper).length) {
+        if (!$('body').children("." + lw_dp_class).has(this.wrapper).length) {
           return this.show();
         }
       }, this));
-      this.isIE = $.browser.msie && parseInt($.browser.version) <= 8;
-      this.input.data(LW_DP_DATA_KEY, true);
+      this.isIE = $.browser.msie && parseInt($.browser.version, 10) <= 8;
+      this.input.data(lw_dp_data_key, true);
       this.settings = {
         startDate: settings['startDate'],
         endDate: settings['endDate'],
@@ -131,11 +132,11 @@
       this.setDate(new Date(2011, 11, 13));
     }
     LightweightDatepicker.prototype.createDatepicker = function() {
-      this.wrapper = $("<div class=" + LW_DP_CLASS + "/>");
-      this.toolbar = $("<div class=" + LW_DP_TOOLBAR_CLASS + "/>").appendTo(this.wrapper);
-      this.previous = $("<div class=" + LW_DP_PREVIOUS_CLASS + ">◄</div>").appendTo(this.toolbar);
-      this.next = $("<div class=" + LW_DP_NEXT_CLASS + ">►</div>").appendTo(this.toolbar);
-      this.month = $("<div class=" + LW_DP_MONTH_CLASS + "/>").appendTo(this.toolbar);
+      this.wrapper = $("<div class=" + lw_dp_class + "/>");
+      this.toolbar = $("<div class=" + lw_dp_toolbar_class + "/>").appendTo(this.wrapper);
+      this.previous = $("<div class=" + lw_dp_previous_class + ">◄</div>").appendTo(this.toolbar);
+      this.next = $("<div class=" + lw_dp_next_class + ">►</div>").appendTo(this.toolbar);
+      this.month = $("<div class=" + lw_dp_month_class + "/>").appendTo(this.toolbar);
       this.renderDows().appendTo(this.wrapper);
       return this.days = $('<div/>').appendTo(this.wrapper);
     };
@@ -149,9 +150,9 @@
         }
       }, this));
       event = this.isIE ? 'mousedown' : 'click';
-      this.wrapper.delegate("." + LW_DP_NEXT_CLASS, event, this.onNextClick);
-      this.wrapper.delegate("." + LW_DP_PREVIOUS_CLASS, event, this.onPreviousClick);
-      return $(this.days).delegate("li:not(." + LW_DP_ACTIVE_DAY_CLASS + ")", event, __bind(function(e) {
+      this.wrapper.delegate("." + lw_dp_next_class, event, this.onNextClick);
+      this.wrapper.delegate("." + lw_dp_previous_class, event, this.onPreviousClick);
+      return $(this.days).delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
         var currentLi;
         currentLi = $(e.currentTarget);
         this.setDate(this.getDateFromElement(currentLi));
@@ -168,7 +169,7 @@
       currentDay = el.text();
       currentYear = this.currentDate.getFullYear();
       diff = 0;
-      if (el.hasClass(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS)) {
+      if (el.hasClass(lw_dp_neighbour_month_day_class)) {
         diff = currentDay > 10 ? -1 : 1;
       }
       currentMonth = this.currentDate.getMonth() + diff;
@@ -213,23 +214,23 @@
         classAttribute = '';
         liContent = day.getDate();
         if (day.getMonth() !== cd.getMonth()) {
-          classes.push(LW_DP_NEIGHBOUR_MONTH_DAY_CLASS);
+          classes.push(lw_dp_neighbour_month_day_class);
         }
         if (day.getDay() === 0 || day.getDay() === 6) {
-          classes.push(LW_DP_WEEKEND_CLASS);
+          classes.push(lw_dp_weekend_class);
         }
         if (day.getDay() === lastDowIndex) {
-          classes.push(LW_DP_WEEK_LAST_COLUMN_CLASS);
+          classes.push(lw_dp_week_last_column_class);
         }
         if (compareDates(day, this.todayDate) === 0) {
-          classes.push(LW_DP_TODAY_CLASS);
+          classes.push(lw_dp_today_class);
           liContent = "<span>" + liContent + "</span>";
         }
         if ((this.activeDate != null) && compareDates(day, this.activeDate) === 0) {
-          classes.push(LW_DP_ACTIVE_DAY_CLASS);
+          classes.push(lw_dp_active_day_class);
         }
         if (!this.isDateInsidePeriod(date)) {
-          classes.push(LW_DP_OUT_OF_INTERVAL_CLASS);
+          classes.push(lw_dp_out_of_interval_class);
           liContent = '';
         }
         if (classes.length) {
@@ -241,11 +242,11 @@
       html = '';
       for (week = 1; 1 <= weeks ? week <= weeks : week >= weeks; 1 <= weeks ? week++ : week--) {
         if (week === 1) {
-          html += "<ul class='" + LW_DP_WEEK_CLASS + " " + LW_DP_FIRSTWEEK_CLASS + "'>";
+          html += "<ul class='" + lw_dp_week_class + " " + lw_dp_firstweek_class + "'>";
         } else if (week === weeks) {
-          html += "<ul class='" + LW_DP_WEEK_CLASS + " " + LW_DP_LASTWEEK_CLASS + "'>";
+          html += "<ul class='" + lw_dp_week_class + " " + lw_dp_lastweek_class + "'>";
         } else {
-          html += "<ul class=" + LW_DP_WEEK_CLASS + ">";
+          html += "<ul class=" + lw_dp_week_class + ">";
         }
         for (day = 1; day <= 7; day++) {
           html += renderDay(date);
@@ -265,11 +266,11 @@
       oldDate = this.activeDate;
       this.currentDate = this.activeDate = date;
       if (date.getFullYear() === oldDate.getFullYear() && date.getMonth() === oldDate.getMonth()) {
-        this.days.find("li." + LW_DP_ACTIVE_DAY_CLASS).removeClass(LW_DP_ACTIVE_DAY_CLASS);
-        activeLi = this.days.find("li:not(." + LW_DP_NEIGHBOUR_MONTH_DAY_CLASS + ")").filter(function() {
+        this.days.find("li." + lw_dp_active_day_class).removeClass(lw_dp_active_day_class);
+        activeLi = this.days.find("li:not(." + lw_dp_neighbour_month_day_class + ")").filter(function() {
           return parseInt($(this).text(), 10) === date.getDate();
         });
-        activeLi.addClass(LW_DP_ACTIVE_DAY_CLASS);
+        activeLi.addClass(lw_dp_active_day_class);
       } else {
         this.updateMonth();
       }
@@ -312,7 +313,7 @@
       var day, first, found, html, name, temp, _i, _len, _ref;
       first = this.settings.dowNames[this.settings.firstDayOfTheWeekIndex];
       found = false;
-      html = "<ul class=" + LW_DP_DOWS_CLASS + ">";
+      html = "<ul class=" + lw_dp_dows_class + ">";
       temp = '';
       _ref = this.settings.dowNames;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -369,10 +370,6 @@
         }
       }
     };
-    LightweightDatepicker.prototype.onChange = function() {
-      this.updateMonth();
-      return this.updateInput();
-    };
     LightweightDatepicker.prototype.hide = function() {
       var _ref;
       if (!this.settings.alwaysVisible && this.shouldHide) {
@@ -397,7 +394,7 @@
         activeDate = new Date(this.activeDate.getTime());
         activeDate.setMonth(this.currentDate.getMonth());
         activeDate.setFullYear(this.currentDate.getFullYear());
-        days = $(this.days).find("li:not(." + LW_DP_NEIGHBOUR_MONTH_DAY_CLASS + ")");
+        days = $(this.days).find("li:not(." + lw_dp_neighbour_month_day_class + ")");
         if (days.length <= activeIndex) {
           return this.selectDay(days.last(), false);
         } else if ((this.settings.endDate != null) && activeDate.getTime() > this.settings.endDate.getTime()) {
@@ -447,7 +444,7 @@
     return this.each(function() {
       var $el;
       $el = $(this);
-      if (($el.is('input, textarea')) && !$el.data(LW_DP_DATA_KEY)) {
+      if (($el.is('input, textarea')) && !$el.data(lw_dp_data_key)) {
         return new LightweightDatepicker($el, options);
       }
     });
