@@ -5,7 +5,7 @@
    *
    * © 2011 Maxim Zhukov (zhkv.mxm@gmail.com)
    * 
-   * Version: 1.0+
+   * Version: 1.1
    * Requires: jQuery v1.6+
    *
    * Dual licensed under the MIT and GPL licenses:
@@ -95,7 +95,7 @@
         return this.setActiveDate(this.parseDate(this.input.val()));
       }, this));
       this.input.bind('click', __bind(function() {
-        if (!$('body').children("." + lw_dp_class).has(this.wrapper).length) {
+        if (!$("." + lw_dp_class).has(this.wrapper).length) {
           return this.show();
         }
       }, this));
@@ -114,11 +114,17 @@
         formatDate: settings['formatDate'],
         onChange: settings['onChange']
       };
-      this.activeDate = new Date;
+      if (this.settings.autoFillToday) {
+        this.activeDate = new Date;
+      }
       this.todayDate = new Date;
       this.currentDate = new Date;
       this.createDatepicker();
-      this.wrapper.appendTo(document.body);
+      if (this.settings.alwaysVisible) {
+        this.wrapper.insertAfter(this.input);
+      } else {
+        this.wrapper.appendTo(document.body);
+      }
       this.margin = parseInt(this.wrapper.css('margin-top'), 10);
       this.wrapper.css('margin', 0);
       this.bindEvents();
@@ -148,9 +154,9 @@
         }
       }, this));
       event = this.isIE ? 'mousedown' : 'click';
-      this.wrapper.delegate("." + lw_dp_next_class, event, this.showNextMonth);
-      this.wrapper.delegate("." + lw_dp_previous_class, event, this.showPreviousMonth);
-      return $(this.days).delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
+      this.toolbar.delegate("." + lw_dp_next_class, event, this.showNextMonth);
+      this.toolbar.delegate("." + lw_dp_previous_class, event, this.showPreviousMonth);
+      return this.days.delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
         var currentLi;
         currentLi = $(e.currentTarget);
         this.setActiveDate(this.getDateFromElement(currentLi));
@@ -158,8 +164,9 @@
           this.hide();
         }
         if (typeof this.settings.onChange === 'function') {
-          return this.settings.onChange(this.activeDate);
+          this.settings.onChange(this.activeDate);
         }
+        return false;
       }, this));
     };
     LightweightDatepicker.prototype.getDateFromElement = function(el) {
@@ -265,7 +272,7 @@
       this.activeDate = date;
       this.setCurrentDate(date);
       this.updateInput();
-      if (date.getFullYear() === oldDate.getFullYear() && date.getMonth() === oldDate.getMonth()) {
+      if ((oldDate != null) && (date.getFullYear() === oldDate.getFullYear() && date.getMonth() === oldDate.getMonth())) {
         this.days.find("li." + lw_dp_active_day_class).removeClass(lw_dp_active_day_class);
         activeLi = this.days.find("li:not(." + lw_dp_neighbour_month_day_class + ")").filter(function() {
           return parseInt($(this).text(), 10) === date.getDate();
@@ -294,6 +301,9 @@
       }
     };
     LightweightDatepicker.prototype.formatDate = function(date) {
+      if (!isDateValid(date)) {
+        return;
+      }
       if (typeof this.settings.formatDate === 'function') {
         return this.settings.formatDate(date);
       } else {
@@ -329,7 +339,11 @@
     };
     LightweightDatepicker.prototype.updatePosition = function() {
       var inputOffset, left, top, wrapperOuterHeight, wrapperOuterWidth;
-      inputOffset = this.input.offset();
+      if (this.settings.alwaysVisible) {
+        inputOffset = this.input.position();
+      } else {
+        inputOffset = this.input.offset();
+      }
       wrapperOuterWidth = this.wrapper.outerWidth();
       wrapperOuterHeight = this.wrapper.outerHeight();
       left = inputOffset.left;
@@ -378,7 +392,9 @@
       return this.shouldHide = true;
     };
     LightweightDatepicker.prototype.show = function() {
-      this.wrapper.appendTo(document.body);
+      if (!this.settings.alwaysVisible) {
+        this.wrapper.appendTo(document.body);
+      }
       this.updatePosition();
       return this.updateMonth();
     };
@@ -389,7 +405,7 @@
       return this.setCurrentDate(new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, this.currentDate.getDate()));
     };
     LightweightDatepicker.prototype.handleKeyDown = function(e) {
-      var handled, keyCode;
+      var handled, keyCode, newDate;
       keyCode = e.keyCode;
       handled = true;
       switch (keyCode) {
@@ -397,10 +413,18 @@
           this.input.blur();
           break;
         case 33:
-          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() - 1, this.activeDate.getDate()));
+          newDate = new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() - 1, this.activeDate.getDate());
+          while (newDate.getMonth() === this.activeDate.getMonth()) {
+            newDate.setDate(newDate.getDate() - 1);
+          }
+          this.setActiveDate(newDate);
           break;
         case 34:
-          this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() + 1, this.activeDate.getDate()));
+          newDate = new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() + 1, this.activeDate.getDate());
+          while (newDate.getMonth() === this.activeDate.getMonth() + 2) {
+            newDate.setDate(newDate.getDate() - 1);
+          }
+          this.setActiveDate(newDate);
           break;
         case 38:
           this.setActiveDate(new Date(this.activeDate.getFullYear(), this.activeDate.getMonth(), this.activeDate.getDate() - 1));
@@ -416,7 +440,7 @@
     return LightweightDatepicker;
   })();
   $.fn['lwDatepicker'] = function(options) {
-    options = $.extend(settings, options);
+    options = $.extend({}, settings, options);
     return this.each(function() {
       var $el;
       $el = $(this);

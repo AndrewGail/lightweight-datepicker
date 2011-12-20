@@ -4,7 +4,7 @@
  *
  * © 2011 Maxim Zhukov (zhkv.mxm@gmail.com)
  * 
- * Version: 1.0+
+ * Version: 1.1
  * Requires: jQuery v1.6+
  *
  * Dual licensed under the MIT and GPL licenses:
@@ -81,6 +81,7 @@ isDateValid = (date) ->
 # Class constructor
 class LightweightDatepicker
 
+  # Define flags that determine month arrow visibility
   canShowPreviousMonth: true
   canShowNextMonth: true
 
@@ -98,7 +99,7 @@ class LightweightDatepicker
     @input.bind 'change', () =>
       @setActiveDate @parseDate @input.val()
     @input.bind 'click', () =>
-      if not $('body').children(".#{lw_dp_class}").has(@wrapper).length
+      if not $(".#{lw_dp_class}").has(@wrapper).length
         @show()
 
     # Determines if it's Internet Explorer 7 or older
@@ -122,14 +123,17 @@ class LightweightDatepicker
       formatDate: settings['formatDate']
       onChange: settings['onChange']
 
-    @activeDate = new Date
+    if @settings.autoFillToday then @activeDate = new Date
     @todayDate = new Date
     @currentDate = new Date
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
 
     @createDatepicker()
-    @wrapper.appendTo document.body
+    if @settings.alwaysVisible
+      @wrapper.insertAfter @input
+    else
+      @wrapper.appendTo document.body
 
     # We will manage margin programmatically for correct datepicker placement
     @margin = parseInt @wrapper.css('margin-top'), 10
@@ -159,11 +163,11 @@ class LightweightDatepicker
       e.stopPropagation()
       if @isIE then @shouldHide = false
 
-    # Datepicker events
+      # Datepicker events
     event = if @isIE then 'mousedown' else 'click'
-    @wrapper.delegate ".#{lw_dp_next_class}", event, @showNextMonth
-    @wrapper.delegate ".#{lw_dp_previous_class}", event, @showPreviousMonth
-    $(@days).delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
+    @toolbar.delegate ".#{lw_dp_next_class}", event, @showNextMonth
+    @toolbar.delegate ".#{lw_dp_previous_class}", event, @showPreviousMonth
+    @days.delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
       currentLi = $(e.currentTarget)      
       @setActiveDate @getDateFromElement currentLi
 
@@ -173,6 +177,9 @@ class LightweightDatepicker
       if typeof @settings.onChange is 'function'
         @settings.onChange @activeDate
 
+      false
+
+  # Constructs Date object corresponds selected element
   getDateFromElement: (el) =>
     currentDay = el.text()
     currentYear = @currentDate.getFullYear()
@@ -229,7 +236,7 @@ class LightweightDatepicker
     daysInMonth = (new Date cd.getFullYear(), cd.getMonth() + 1, 0).getDate()
     weeks = Math.ceil (daysInMonth + 7 - daysInFirstWeek) / 7.0
 
-    # Renders day with all necessary classes
+    # Renders a day with all necessary classes
     renderDay = (day) =>
       classes = []
       classAttribute = ''
@@ -305,12 +312,13 @@ class LightweightDatepicker
     @updateInput()
 
     # Check if selected day's month differs from the current one
-    if (date.getFullYear() is oldDate.getFullYear() and date.getMonth() is oldDate.getMonth())
+    if oldDate? and (date.getFullYear() is oldDate.getFullYear() and date.getMonth() is oldDate.getMonth())
       @days.find("li.#{lw_dp_active_day_class}").removeClass lw_dp_active_day_class
       activeLi = @days.find("li:not(.#{lw_dp_neighbour_month_day_class})").filter ->
         parseInt($(@).text(), 10) is date.getDate()
       activeLi.addClass lw_dp_active_day_class
 
+  # Sets current date and redraws datepicker
   setCurrentDate: (date) =>
     @currentDate = date
     @updateMonth()
@@ -332,6 +340,8 @@ class LightweightDatepicker
 
   # Formats date as text
   formatDate: (date) ->
+    if not isDateValid date
+      return
     if typeof @settings.formatDate is 'function'
       @settings.formatDate date
     else
@@ -357,7 +367,10 @@ class LightweightDatepicker
 
   # Calculates and sets position of datepicker
   updatePosition: ->
-    inputOffset = @input.offset()    
+    if @settings.alwaysVisible
+      inputOffset = @input.position()
+    else
+      inputOffset = @input.offset()
     wrapperOuterWidth = @wrapper.outerWidth()
     wrapperOuterHeight = @wrapper.outerHeight()
 
@@ -381,7 +394,7 @@ class LightweightDatepicker
       else
         @wrapper.css 'top': top
 
-  # Hides day picker
+  # Hides daypicker
   hide: =>
     if not @settings.alwaysVisible and @shouldHide
       @wrapper.detach()
@@ -389,28 +402,12 @@ class LightweightDatepicker
       @input?.focus()
     @shouldHide = true
 
-  # Shows day picker
+  # Shows daypicker
   show: =>
-    @wrapper.appendTo document.body
+    if not @settings.alwaysVisible
+      @wrapper.appendTo document.body
     @updatePosition()
     @updateMonth()
-  
-  # Selects the same day in changed month
-  # changeMonth: ->
-  #   if @activeDate?
-  #     activeIndex = @activeDate.getDate() - 1
-  #     activeDate = new Date @activeDate.getTime()
-  #     activeDate.setMonth @currentDate.getMonth()
-  #     activeDate.setFullYear @currentDate.getFullYear()
-  #     days = $(@days).find "li:not(.#{lw_dp_neighbour_month_day_class})"
-  #     if days.length <= activeIndex
-  #       @selectDay days.last(), false
-  #     else if @settings.endDate? and activeDate.getTime() > @settings.endDate.getTime()
-  #       @selectDay days.eq(@settings.endDate.getDate() - 2), false
-  #     else if @settings.startDate? and activeDate.getTime() < @settings.startDate.getTime()
-  #       @selectDay days.eq(@settings.startDate.getDate()), false
-  #     else
-  #       @selectDay days.eq(activeIndex), false
 
   # Shows previous month
   showPreviousMonth: =>
@@ -429,11 +426,19 @@ class LightweightDatepicker
         # @hide()
         @input.blur()
       when 33 # PgUp
-        # Selects the same day of previous month
-        @setActiveDate new Date(@activeDate.getFullYear(), @activeDate.getMonth()-1, @activeDate.getDate())
+        # Selects the same day of the previous month
+        newDate = new Date @activeDate.getFullYear(), @activeDate.getMonth()-1, @activeDate.getDate()
+        # If the previous month is shorter, selects its last day
+        while newDate.getMonth() is @activeDate.getMonth()
+          newDate.setDate newDate.getDate() - 1
+        @setActiveDate newDate
       when 34 # PgDown
         # Selects the same day of next month
-        @setActiveDate new Date(@activeDate.getFullYear(), @activeDate.getMonth()+1, @activeDate.getDate())
+        newDate = new Date(@activeDate.getFullYear(), @activeDate.getMonth()+1, @activeDate.getDate())
+        # If the next month is shorter, selects its last day
+        while newDate.getMonth() is @activeDate.getMonth() + 2
+          newDate.setDate newDate.getDate() - 1
+        @setActiveDate newDate
       when 38 # Up
         # Selects previous day
         @setActiveDate new Date(@activeDate.getFullYear(), @activeDate.getMonth(), @activeDate.getDate() - 1)
@@ -446,7 +451,7 @@ class LightweightDatepicker
 
 # Adds plugin object to jQuery
 $.fn['lwDatepicker'] = (options) ->
-  options = $.extend settings, options
+  options = $.extend {}, settings, options
 
   return @each ->
     $el = $(@)
