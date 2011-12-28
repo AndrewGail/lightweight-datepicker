@@ -380,17 +380,19 @@ class LightweightDatepicker
       @wrapper.css 'left': left
     else
       if inputOffset.left > wrapperOuterWidth + @margin
-        @wrapper.css 'left': inputOffset.left - wrapperOuterWidth - @margin
+        @wrapper.css 'left': $('body').width() - wrapperOuterWidth + @margin
       else
         @wrapper.css 'left': left
 
     # Vertical position
+    @wrapper.removeClass 'lw-dp-opposite-vertical'
     top = inputOffset.top + @input.outerHeight() + @margin
     if $(document).height() > top + wrapperOuterHeight
       @wrapper.css 'top': top
     else
       if inputOffset.top > wrapperOuterHeight + @margin
         @wrapper.css 'top': inputOffset.top - wrapperOuterHeight - @margin
+        @wrapper.addClass 'lw-dp-opposite-vertical'
       else
         @wrapper.css 'top': top
 

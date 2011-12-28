@@ -354,7 +354,7 @@
       } else {
         if (inputOffset.left > wrapperOuterWidth + this.margin) {
           this.wrapper.css({
-            'left': inputOffset.left - wrapperOuterWidth - this.margin
+            'left': $('body').width() - wrapperOuterWidth + this.margin
           });
         } else {
           this.wrapper.css({
@@ -362,6 +362,7 @@
           });
         }
       }
+      this.wrapper.removeClass('lw-dp-opposite-vertical');
       top = inputOffset.top + this.input.outerHeight() + this.margin;
       if ($(document).height() > top + wrapperOuterHeight) {
         return this.wrapper.css({
@@ -369,9 +370,10 @@
         });
       } else {
         if (inputOffset.top > wrapperOuterHeight + this.margin) {
-          return this.wrapper.css({
+          this.wrapper.css({
             'top': inputOffset.top - wrapperOuterHeight - this.margin
           });
+          return this.wrapper.addClass('lw-dp-opposite-vertical');
         } else {
           return this.wrapper.css({
             'top': top
