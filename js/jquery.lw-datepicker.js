@@ -78,6 +78,7 @@
     LightweightDatepicker.prototype.canShowNextMonth = true;
     LightweightDatepicker.prototype.shouldHide = true;
     function LightweightDatepicker(el, settings) {
+      this.destroy = __bind(this.destroy, this);
       this._handleKeyDown = __bind(this._handleKeyDown, this);
       this.showNextMonth = __bind(this.showNextMonth, this);
       this.showPreviousMonth = __bind(this.showPreviousMonth, this);
@@ -87,18 +88,14 @@
       this.setCurrentDate = __bind(this.setCurrentDate, this);
       this.setActiveDate = __bind(this.setActiveDate, this);
       this._updateMonth = __bind(this._updateMonth, this);
-      this._getDateFromElement = __bind(this._getDateFromElement, this);      this.input = el;
+      this._getDateFromElement = __bind(this._getDateFromElement, this);
+      this._onChange = __bind(this._onChange, this);
+      this._onClick = __bind(this._onClick, this);      this.input = el;
       this.input.bind('focus', this.show);
       this.input.bind('blur', this.hide);
       this.input.bind('keydown', this._handleKeyDown);
-      this.input.bind('change', __bind(function() {
-        return this.setActiveDate(this._parseDate(this.input.val()));
-      }, this));
-      this.input.bind('click', __bind(function() {
-        if (!$("." + lw_dp_class).has(this.wrapper).length) {
-          return this.show();
-        }
-      }, this));
+      this.input.bind('change', this._onchange);
+      this.input.bind('click', this._onClick);
       this.isIE = $.browser.msie && parseInt($.browser.version, 10) <= 8;
       this.input.data(lw_dp_data_key, this);
       this.settings = {
@@ -135,6 +132,14 @@
       this._updateMonth();
       this.hide();
     }
+    LightweightDatepicker.prototype._onClick = function() {
+      if (!$("." + lw_dp_class).has(this.wrapper).length) {
+        return this.show();
+      }
+    };
+    LightweightDatepicker.prototype._onChange = function() {
+      return this.setActiveDate(this._parseDate(this.input.val()));
+    };
     LightweightDatepicker.prototype._createDatepicker = function() {
       this.wrapper = $("<div class=" + lw_dp_class + "/>");
       this.toolbar = $("<div class=" + lw_dp_toolbar_class + "/>").appendTo(this.wrapper);
@@ -438,6 +443,17 @@
           handled = false;
       }
       return !handled;
+    };
+    LightweightDatepicker.prototype.destroy = function() {
+      this.toolbar.undelegate();
+      this.days.undelegate();
+      this.input.unbind('focus', this.show);
+      this.input.unbind('blur', this.hide);
+      this.input.unbind('keydown', this._handleKeyDown);
+      this.input.unbind('change', this._onchange);
+      this.input.unbind('click', this._onClick);
+      this.input.data(lw_dp_data_key, null);
+      return this.input = null;
     };
     return LightweightDatepicker;
   })();

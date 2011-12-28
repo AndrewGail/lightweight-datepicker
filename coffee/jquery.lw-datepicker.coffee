@@ -96,11 +96,8 @@ class LightweightDatepicker
     @input.bind 'focus', @show
     @input.bind 'blur', @hide
     @input.bind 'keydown', @_handleKeyDown
-    @input.bind 'change', () =>
-      @setActiveDate @_parseDate @input.val()
-    @input.bind 'click', () =>
-      if not $(".#{lw_dp_class}").has(@wrapper).length
-        @show()
+    @input.bind 'change', @_onchange
+    @input.bind 'click', @_onClick
 
     # Determines if it's Internet Explorer 7 or older
     @isIE = $.browser.msie and parseInt($.browser.version, 10) <= 8
@@ -145,6 +142,15 @@ class LightweightDatepicker
     @updateInput()
     @_updateMonth()
     @hide()
+
+  # Handles click event
+  _onClick: =>
+    if not $(".#{lw_dp_class}").has(@wrapper).length
+      @show()
+
+  # Handles change event
+  _onChange: =>
+    @setActiveDate @_parseDate @input.val()
 
   # Creates necessary markup
   _createDatepicker: ->
@@ -452,7 +458,24 @@ class LightweightDatepicker
     return not handled
 
   # Destroys datepicker
-  # destroy: =>    
+  destroy: =>
+    # Unbinds all datepicker events
+    @toolbar.undelegate()
+    @days.undelegate()
+
+    # Unbinds input events
+    @input.unbind 'focus', @show
+    @input.unbind 'blur', @hide
+    @input.unbind 'keydown', @_handleKeyDown
+    @input.unbind 'change', @_onchange
+    @input.unbind 'click', @_onClick
+
+    # Deletes jQueryDate
+    @input.data lw_dp_data_key, null
+
+    # Deletes input reference
+    @input = null
+
 
 # Adds plugin object to jQuery
 $.fn['lwDatepicker'] = (options) ->
