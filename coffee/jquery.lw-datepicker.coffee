@@ -106,7 +106,7 @@ class LightweightDatepicker
     @isIE = $.browser.msie and parseInt($.browser.version, 10) <= 8
 
     # Necessary for prevent binding two or more datepickers to one input
-    @input.data lw_dp_data_key, true
+    @input.data lw_dp_data_key, @
 
     # Saves settings
     # Manually assigning values for better file size optimization

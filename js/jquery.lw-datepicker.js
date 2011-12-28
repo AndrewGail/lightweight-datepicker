@@ -100,7 +100,7 @@
         }
       }, this));
       this.isIE = $.browser.msie && parseInt($.browser.version, 10) <= 8;
-      this.input.data(lw_dp_data_key, true);
+      this.input.data(lw_dp_data_key, this);
       this.settings = {
         startDate: settings['startDate'],
         endDate: settings['endDate'],
