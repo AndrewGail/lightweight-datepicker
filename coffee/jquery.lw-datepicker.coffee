@@ -95,9 +95,9 @@ class LightweightDatepicker
     # Input events
     @input.bind 'focus', @show
     @input.bind 'blur', @hide
-    @input.bind 'keydown', @handleKeyDown
+    @input.bind 'keydown', @_handleKeyDown
     @input.bind 'change', () =>
-      @setActiveDate @parseDate @input.val()
+      @setActiveDate @_parseDate @input.val()
     @input.bind 'click', () =>
       if not $(".#{lw_dp_class}").has(@wrapper).length
         @show()
@@ -129,7 +129,7 @@ class LightweightDatepicker
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
 
-    @createDatepicker()
+    @_createDatepicker()
     if @settings.alwaysVisible
       @wrapper.insertAfter @input
     else
@@ -139,25 +139,25 @@ class LightweightDatepicker
     @margin = parseInt @wrapper.css('margin-top'), 10
     @wrapper.css 'margin', 0
 
-    @bindEvents()
+    @_bindEvents()
 
     if @settings.alwaysVisible then @updatePosition()
     @updateInput()
-    @updateMonth()
+    @_updateMonth()
     @hide()
 
   # Creates necessary markup
-  createDatepicker: ->
+  _createDatepicker: ->
     @wrapper = $ "<div class=#{lw_dp_class}/>"
     @toolbar = $("<div class=#{lw_dp_toolbar_class}/>").appendTo @wrapper
     @previous = $("<div class=#{lw_dp_previous_class}>◄</div>").appendTo @toolbar
     @next = $("<div class=#{lw_dp_next_class}>►</div>").appendTo @toolbar
     @month = $("<div class=#{lw_dp_month_class}/>").appendTo @toolbar
-    @renderDows().appendTo @wrapper
+    @_renderDows().appendTo @wrapper
     @days = $('<div/>').appendTo @wrapper
 
   # Binds events
-  bindEvents: ->
+  _bindEvents: ->
     @wrapper.bind 'mousedown touchstart', (e) =>
       e.preventDefault()
       e.stopPropagation()
@@ -169,7 +169,7 @@ class LightweightDatepicker
     @toolbar.delegate ".#{lw_dp_previous_class}", event, @showPreviousMonth
     @days.delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
       currentLi = $(e.currentTarget)      
-      @setActiveDate @getDateFromElement currentLi
+      @setActiveDate @_getDateFromElement currentLi
 
       if @settings.autoHideAfterClick then @hide()        
 
@@ -180,7 +180,7 @@ class LightweightDatepicker
       false
 
   # Constructs Date object corresponds selected element
-  getDateFromElement: (el) =>
+  _getDateFromElement: (el) =>
     currentDay = el.text()
     currentYear = @currentDate.getFullYear()
       
@@ -197,10 +197,10 @@ class LightweightDatepicker
 
   # Changes value of binded input to active date
   updateInput: ->
-    @input.val @formatDate @activeDate
+    @input.val @_formatDate @activeDate
 
   # Renders current month
-  updateMonth: =>
+  _updateMonth: =>
     # Updates month name and year
     @month.html @settings.monthNames[@currentDate.getMonth()] + ', ' + @currentDate.getFullYear()
 
@@ -265,7 +265,7 @@ class LightweightDatepicker
         classes.push lw_dp_active_day_class
 
       # Handles date interval borders
-      if not @isDateInsidePeriod date
+      if not @_isDateInsidePeriod date
         classes.push lw_dp_out_of_interval_class
         liContent = ''
 
@@ -298,7 +298,7 @@ class LightweightDatepicker
       return false
 
     # Check if date is inside the permitted period
-    if not @isDateInsidePeriod date
+    if not @_isDateInsidePeriod date
       return false
 
     # Saves previous active date
@@ -321,10 +321,10 @@ class LightweightDatepicker
   # Sets current date and redraws datepicker
   setCurrentDate: (date) =>
     @currentDate = date
-    @updateMonth()
+    @_updateMonth()
 
   # Check if date is inside the permitted period
-  isDateInsidePeriod: (date) =>
+  _isDateInsidePeriod: (date) =>
     if @settings.startDate? and (compareDates(date, @settings.startDate) is -1)
       return false
     if @settings.endDate? and (compareDates(date, @settings.endDate) is 1)
@@ -332,14 +332,14 @@ class LightweightDatepicker
     return true
    
   # Parses string to Date object
-  parseDate: (string) ->
+  _parseDate: (string) ->
     if typeof @settings.parseDate is 'function'
       @settings.parseDate string
     else
       new Date (Date.parse string)
 
   # Formats date as text
-  formatDate: (date) ->
+  _formatDate: (date) ->
     if not isDateValid date
       return
     if typeof @settings.formatDate is 'function'
@@ -352,7 +352,7 @@ class LightweightDatepicker
         ''
 
   # Renders names of days of the week
-  renderDows: ->
+  _renderDows: ->
     first = @settings.dowNames[@settings.firstDayOfTheWeekIndex]
     found = false
     html = "<ul class=#{lw_dp_dows_class}>"
@@ -409,7 +409,7 @@ class LightweightDatepicker
     if not @settings.alwaysVisible
       @wrapper.appendTo document.body
     @updatePosition()
-    @updateMonth()
+    @_updateMonth()
 
   # Shows previous month
   showPreviousMonth: =>
@@ -420,7 +420,7 @@ class LightweightDatepicker
     @setCurrentDate new Date(@currentDate.getFullYear(), @currentDate.getMonth()+1, @currentDate.getDate())
 
  # Handles keyboard-navigation
-  handleKeyDown: (e) =>
+  _handleKeyDown: (e) =>
     keyCode = e.keyCode
     handled = true
     switch keyCode
@@ -450,6 +450,9 @@ class LightweightDatepicker
       else
         handled = false
     return not handled
+
+  # Destroys datepicker
+  # destroy: =>    
 
 # Adds plugin object to jQuery
 $.fn['lwDatepicker'] = (options) ->
