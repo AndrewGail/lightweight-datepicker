@@ -146,14 +146,14 @@
     };
     LightweightDatepicker.prototype.bindEvents = function() {
       var event;
-      this.wrapper.bind('mousedown', __bind(function(e) {
+      this.wrapper.bind('mousedown touchstart', __bind(function(e) {
         e.preventDefault();
         e.stopPropagation();
         if (this.isIE) {
           return this.shouldHide = false;
         }
       }, this));
-      event = this.isIE ? 'mousedown' : 'click';
+      event = this.isIE ? 'mousedown' : 'click touchstart';
       this.toolbar.delegate("." + lw_dp_next_class, event, this.showNextMonth);
       this.toolbar.delegate("." + lw_dp_previous_class, event, this.showPreviousMonth);
       return this.days.delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
@@ -164,7 +164,7 @@
           this.hide();
         }
         if (typeof this.settings.onChange === 'function') {
-          this.settings.onChange(this.activeDate);
+          this.settings.onChange(this.activeDate, this.input);
         }
         return false;
       }, this));

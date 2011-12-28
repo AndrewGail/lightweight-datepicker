@@ -158,13 +158,13 @@ class LightweightDatepicker
 
   # Binds events
   bindEvents: ->
-    @wrapper.bind 'mousedown', (e) =>
+    @wrapper.bind 'mousedown touchstart', (e) =>
       e.preventDefault()
       e.stopPropagation()
       if @isIE then @shouldHide = false
 
       # Datepicker events
-    event = if @isIE then 'mousedown' else 'click'
+    event = if @isIE then 'mousedown' else 'click touchstart'
     @toolbar.delegate ".#{lw_dp_next_class}", event, @showNextMonth
     @toolbar.delegate ".#{lw_dp_previous_class}", event, @showPreviousMonth
     @days.delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
@@ -175,7 +175,7 @@ class LightweightDatepicker
 
       # Calls optional user's onChange function
       if typeof @settings.onChange is 'function'
-        @settings.onChange @activeDate
+        @settings.onChange @activeDate, @input
 
       false
 
