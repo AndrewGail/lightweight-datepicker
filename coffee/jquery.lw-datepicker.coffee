@@ -120,7 +120,7 @@ class LightweightDatepicker
       formatDate: settings['formatDate']
       onChange: settings['onChange']
 
-    @todayDate = @settings.startDate || new Date
+    @todayDate = new Date
     @currentDate = @settings.startDate || new Date
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows

@@ -111,7 +111,7 @@
         formatDate: settings['formatDate'],
         onChange: settings['onChange']
       };
-      this.todayDate = this.settings.startDate || new Date;
+      this.todayDate = new Date;
       this.currentDate = this.settings.startDate || new Date;
       this._createDatepicker();
       if (this.settings.autoFillToday) {
