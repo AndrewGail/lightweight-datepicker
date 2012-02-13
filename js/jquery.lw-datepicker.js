@@ -413,13 +413,15 @@
       return this.setCurrentDate(new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, this.currentDate.getDate()));
     };
     LightweightDatepicker.prototype._handleKeyDown = function(e) {
-      var handled, keyCode, newDate;
+      var handled, keyCode, newDate, selectionEnd, selectionStart;
       keyCode = e.keyCode;
       handled = true;
+      selectionStart = this.input[0].selectionStart;
+      selectionEnd = this.input[0].selectionEnd;
       switch (keyCode) {
         case 27:
           this.input.blur();
-          break;
+          return false;
         case 33:
           newDate = new Date(this.activeDate.getFullYear(), this.activeDate.getMonth() - 1, this.activeDate.getDate());
           while (newDate.getMonth() === this.activeDate.getMonth()) {
@@ -443,6 +445,8 @@
         default:
           handled = false;
       }
+      this.input[0].selectionStart = selectionStart;
+      this.input[0].selectionEnd = selectionEnd;
       return !handled;
     };
     LightweightDatepicker.prototype.destroy = function() {

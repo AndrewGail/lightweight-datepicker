@@ -434,10 +434,15 @@ class LightweightDatepicker
   _handleKeyDown: (e) =>
     keyCode = e.keyCode
     handled = true
+
+    selectionStart = @input[0].selectionStart;
+    selectionEnd = @input[0].selectionEnd;
+
     switch keyCode
       when 27 # Esc
         # @hide()
         @input.blur()
+        return false
       when 33 # PgUp
         # Selects the same day of the previous month
         newDate = new Date @activeDate.getFullYear(), @activeDate.getMonth()-1, @activeDate.getDate()
@@ -460,6 +465,9 @@ class LightweightDatepicker
         @setActiveDate new Date(@activeDate.getFullYear(), @activeDate.getMonth(), @activeDate.getDate() + 1)
       else
         handled = false
+
+    @input[0].selectionStart = selectionStart;
+    @input[0].selectionEnd = selectionEnd;
     return not handled
 
   # Destroys datepicker
