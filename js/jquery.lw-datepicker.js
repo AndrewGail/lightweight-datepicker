@@ -111,12 +111,14 @@
         formatDate: settings['formatDate'],
         onChange: settings['onChange']
       };
-      if (this.settings.autoFillToday) {
-        this.activeDate = new Date;
-      }
-      this.todayDate = new Date;
-      this.currentDate = new Date;
+      this.todayDate = this.settings.startDate || new Date;
+      this.currentDate = this.settings.startDate || new Date;
       this._createDatepicker();
+      if (this.settings.autoFillToday) {
+        this.setActiveDate(new Date);
+      } else {
+
+      }
       this.setActiveDate(this._parseDate(this.input.val()));
       if (this.settings.alwaysVisible) {
         this.wrapper.insertAfter(this.input);

@@ -120,16 +120,16 @@ class LightweightDatepicker
       formatDate: settings['formatDate']
       onChange: settings['onChange']
 
-    if @settings.autoFillToday then @activeDate = new Date
-    
-    @todayDate = new Date
-    @currentDate = new Date
+    @todayDate = @settings.startDate || new Date
+    @currentDate = @settings.startDate || new Date
     # @currentDate = new Date 2021, 1, 1 # February 2021 takes 4 rows
     # @currentDate = new Date 2012, 0, 1 # January 2012 takes 6 rows
 
     @_createDatepicker()
 
-    # Gets value from html
+    if @settings.autoFillToday
+      @setActiveDate new Date
+    else # Gets value from html
     @setActiveDate @_parseDate @input.val()
 
     if @settings.alwaysVisible

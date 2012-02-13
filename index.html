@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="css/datepicker.css" type="text/css" media="screen">
   <script src="js/jquery-1.7.1.min.js"></script>
   <script src="js/jquery.lw-datepicker.js"></script>
+<!--
   <script type="text/javascript">
     $(function(){
       $('#date1, #date2, #date3').lwDatepicker({
@@ -17,6 +18,8 @@
       });
     });
   </script>
+  -->
+
   <title>DatePicker</title>
 </head>
 <body>
@@ -24,6 +27,26 @@
   <input type="text" id="date1">
   <input type="text" id="date2" value="1/1/2012">
   <input type="text" id="date3">
+
+  <script type="text/javascript">
+    $(function () {
+        var today = new Date(); 
+        today.setFullYear(today.getFullYear() + 1);
+        today.setMonth(today.getMonth());
+        $('#date1').lwDatepicker({
+            autoFillToday: true,
+            autoHideAfterClick: true,
+            alwaysVisible: false,
+            startDate: new Date(today.getFullYear(), today.getMonth(), (new Date).getDate() - 32),
+            endDate: new Date(today.getFullYear(), today.getMonth(), (new Date).getDate() + 32),
+            firstDayOfTheWeekIndex: 1,
+            formatDate: function (date) {
+                return ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear()
+            },
+        });
+    });
+  </script>
+
 </div>
 </body>
 </html> 
