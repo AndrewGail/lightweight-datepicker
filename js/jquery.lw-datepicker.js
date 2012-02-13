@@ -117,6 +117,7 @@
       this.todayDate = new Date;
       this.currentDate = new Date;
       this._createDatepicker();
+      this.setActiveDate(this._parseDate(this.input.val()));
       if (this.settings.alwaysVisible) {
         this.wrapper.insertAfter(this.input);
       } else {
