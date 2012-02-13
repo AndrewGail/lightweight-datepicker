@@ -173,8 +173,8 @@ class LightweightDatepicker
     event = if @isIE then 'mousedown' else 'click touchstart'
     @toolbar.delegate ".#{lw_dp_next_class}", event, @showNextMonth
     @toolbar.delegate ".#{lw_dp_previous_class}", event, @showPreviousMonth
-    @days.delegate "li:not(.#{lw_dp_active_day_class})", event, (e) =>
-      currentLi = $(e.currentTarget)      
+    @days.delegate "li:not(.#{lw_dp_active_day_class}):not(.#{lw_dp_out_of_interval_class})", event, (e) =>
+      currentLi = $(e.currentTarget)          
       @setActiveDate @_getDateFromElement currentLi
 
       if @settings.autoHideAfterClick then @hide()        

@@ -161,7 +161,7 @@
       event = this.isIE ? 'mousedown' : 'click touchstart';
       this.toolbar.delegate("." + lw_dp_next_class, event, this.showNextMonth);
       this.toolbar.delegate("." + lw_dp_previous_class, event, this.showPreviousMonth);
-      return this.days.delegate("li:not(." + lw_dp_active_day_class + ")", event, __bind(function(e) {
+      return this.days.delegate("li:not(." + lw_dp_active_day_class + "):not(." + lw_dp_out_of_interval_class + ")", event, __bind(function(e) {
         var currentLi;
         currentLi = $(e.currentTarget);
         this.setActiveDate(this._getDateFromElement(currentLi));
