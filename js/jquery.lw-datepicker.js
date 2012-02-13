@@ -114,10 +114,8 @@
       this.todayDate = new Date;
       this.currentDate = this.settings.startDate || new Date;
       this._createDatepicker();
-      if (this.settings.autoFillToday) {
-        this.setActiveDate(new Date);
-      } else {
-
+      if (this.settings.autoFillToday && this._isDateInsidePeriod(new Date)) {
+        this.activeDate = new Date;
       }
       this.setActiveDate(this._parseDate(this.input.val()));
       if (this.settings.alwaysVisible) {

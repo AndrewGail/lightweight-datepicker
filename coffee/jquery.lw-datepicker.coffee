@@ -127,9 +127,10 @@ class LightweightDatepicker
 
     @_createDatepicker()
 
-    if @settings.autoFillToday
-      @setActiveDate new Date
-    else # Gets value from html
+    if @settings.autoFillToday and @_isDateInsidePeriod new Date
+      @activeDate = new Date
+
+    # Gets value from html
     @setActiveDate @_parseDate @input.val()
 
     if @settings.alwaysVisible
