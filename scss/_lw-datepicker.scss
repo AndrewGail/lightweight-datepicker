@@ -128,27 +128,40 @@ $lw-dp-cell-weekend-background-color: contrast-color(
 
 .lw-dp-previous, .lw-dp-next {
   position: absolute;
-  top: $lw-dp-padding;
-  width: $lw-dp-cell-width;
-  height: floor($lw-dp-base-font-size * 1.7);
+  overflow: hidden;
+  top: $lw-dp-padding * 2;
+  width: 0;
+  height: 0;
   color: $lw-dp-font-color-neighbour;
   cursor: pointer;
-}
-
-.lw-dp-previous:hover, .lw-dp-next:hover {
-  color: $lw-dp-font-color;
-}
-
-.lw-dp-previous:active, .lw-dp-next:active {
-  color: $lw-dp-desaturated-color;
+  border-top: $lw-dp-cell-width / 3.2 solid transparent;
+  border-bottom: $lw-dp-cell-width / 3.2 solid transparent;
 }
 
 .lw-dp-previous {
-  left: $lw-dp-padding;
+  left: $lw-dp-padding * 2;
+  border-right: $lw-dp-cell-width / 1.6 solid $lw-dp-font-color-neighbour;
 }
 
 .lw-dp-next {
-  right: $lw-dp-padding;
+  right: $lw-dp-padding * 2;
+  border-left: $lw-dp-cell-width / 1.6 solid $lw-dp-font-color-neighbour;
+}
+
+.lw-dp-previous:hover {
+  border-right-color: $lw-dp-font-color;
+}
+
+.lw-dp-next:hover {
+  border-left-color: $lw-dp-font-color;
+}
+
+.lw-dp-previous:active {
+  border-right-color: $lw-dp-desaturated-color;
+}
+
+.lw-dp-next:active {
+  border-left-color: $lw-dp-desaturated-color;
 }
 
 .lw-dp-dows {

@@ -156,8 +156,8 @@ class LightweightDatepicker
   _createDatepicker: ->
     @wrapper = $ "<div class=#{lw_dp_class}/>"
     @toolbar = $("<div class=#{lw_dp_toolbar_class}/>").appendTo @wrapper
-    @previous = $("<div class=#{lw_dp_previous_class}>◄</div>").appendTo @toolbar
-    @next = $("<div class=#{lw_dp_next_class}>►</div>").appendTo @toolbar
+    @previous = $("<div class=#{lw_dp_previous_class}/>").appendTo @toolbar
+    @next = $("<div class=#{lw_dp_next_class}/>").appendTo @toolbar
     @month = $("<div class=#{lw_dp_month_class}/>").appendTo @toolbar
     @_renderDows().appendTo @wrapper
     @days = $('<div/>').appendTo @wrapper

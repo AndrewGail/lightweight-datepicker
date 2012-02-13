@@ -143,8 +143,8 @@
     LightweightDatepicker.prototype._createDatepicker = function() {
       this.wrapper = $("<div class=" + lw_dp_class + "/>");
       this.toolbar = $("<div class=" + lw_dp_toolbar_class + "/>").appendTo(this.wrapper);
-      this.previous = $("<div class=" + lw_dp_previous_class + ">◄</div>").appendTo(this.toolbar);
-      this.next = $("<div class=" + lw_dp_next_class + ">►</div>").appendTo(this.toolbar);
+      this.previous = $("<div class=" + lw_dp_previous_class + "/>").appendTo(this.toolbar);
+      this.next = $("<div class=" + lw_dp_next_class + "/>").appendTo(this.toolbar);
       this.month = $("<div class=" + lw_dp_month_class + "/>").appendTo(this.toolbar);
       this._renderDows().appendTo(this.wrapper);
       return this.days = $('<div/>').appendTo(this.wrapper);
