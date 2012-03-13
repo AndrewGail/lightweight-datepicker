@@ -96,7 +96,7 @@ class LightweightDatepicker
     @input.bind 'focus', @show
     @input.bind 'blur', @hide
     @input.bind 'keydown', @_handleKeyDown
-    @input.bind 'change', @_onchange
+    @input.bind 'change', @_onChange
     @input.bind 'click', @_onClick
 
     # Determines if it's Internet Explorer 7 or older
