@@ -156,6 +156,7 @@ class LightweightDatepicker
 
   # Handles change event
   _onChange: =>
+    return if @updatingInput
     @setActiveDate @_parseDate @input.val()
 
   # Creates necessary markup
@@ -210,6 +211,9 @@ class LightweightDatepicker
   # Changes value of binded input to active date
   updateInput: ->
     @input.val @_formatDate @activeDate
+    @updatingInput = true
+    @input.trigger('change')
+    @updatingInput = false
 
   # Renders current month
   _updateMonth: =>
@@ -481,7 +485,7 @@ class LightweightDatepicker
     @input.unbind 'focus', @show
     @input.unbind 'blur', @hide
     @input.unbind 'keydown', @_handleKeyDown
-    @input.unbind 'change', @_onchange
+    @input.unbind 'change', @_onChange
     @input.unbind 'click', @_onClick
 
     # Deletes jQueryDate

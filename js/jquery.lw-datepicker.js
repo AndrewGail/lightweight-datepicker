@@ -169,6 +169,7 @@
     };
 
     LightweightDatepicker.prototype._onChange = function() {
+      if (this.updatingInput) return;
       return this.setActiveDate(this._parseDate(this.input.val()));
     };
 
@@ -218,7 +219,10 @@
     };
 
     LightweightDatepicker.prototype.updateInput = function() {
-      return this.input.val(this._formatDate(this.activeDate));
+      this.input.val(this._formatDate(this.activeDate));
+      this.updatingInput = true;
+      this.input.trigger('change');
+      return this.updatingInput = false;
     };
 
     LightweightDatepicker.prototype._updateMonth = function() {
@@ -483,7 +487,7 @@
       this.input.unbind('focus', this.show);
       this.input.unbind('blur', this.hide);
       this.input.unbind('keydown', this._handleKeyDown);
-      this.input.unbind('change', this._onchange);
+      this.input.unbind('change', this._onChange);
       this.input.unbind('click', this._onClick);
       this.input.data(lw_dp_data_key, null);
       return this.input = null;
