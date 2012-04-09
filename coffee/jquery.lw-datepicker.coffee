@@ -494,7 +494,6 @@ class LightweightDatepicker
     # Deletes input reference
     @input = null
 
-
 # Adds plugin object to jQuery
 $.fn['lwDatepicker'] = (options) ->
   options = $.extend {}, settings, options
@@ -505,3 +504,6 @@ $.fn['lwDatepicker'] = (options) ->
     # and binding more than one datepicker to one element.
     if ($el.is 'input, textarea') and not $el.data lw_dp_data_key
       new LightweightDatepicker $el, options
+
+$.fn['lwDatepicker']['setDefaultOptions'] = (options = {}) ->
+  settings = $.extend settings, options

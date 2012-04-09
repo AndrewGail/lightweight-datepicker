@@ -508,4 +508,9 @@
     });
   };
 
+  $.fn['lwDatepicker']['setDefaultOptions'] = function(options) {
+    if (options == null) options = {};
+    return settings = $.extend(settings, options);
+  };
+
 }).call(this);
